@@ -1,0 +1,27 @@
+2025-02-26 20:18:32,173 - WARNING -  * Debugger is active!
+2025-02-26 20:18:32,180 - INFO -  * Debugger PIN: 154-893-569
+2025-02-26 20:18:34,951 - ERROR - Ocorreu um erro ao calcular calorias: CalculoControle.calcular_calorias() got an unexpected keyword argument 'completo'
+Traceback (most recent call last):
+  File "C:\Users\Admin\mr_fit\backend\mrfit_app\rotas\calculos.py", line 25, in calcular
+    response, status_code = CalculoControle.calcular_calorias(dados, db, completo=False)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CalculoControle.calcular_calorias() got an unexpected keyword argument 'completo'
+2025-02-26 20:18:34,954 - INFO - DESKTOP-6J8R9MV - - [26/Feb/2025 20:18:34] "[35m[1mPOST /calculo/ HTTP/1.1[0m" 500 -
+2025-02-26 20:20:31,449 - INFO -  * Detected change in 'C:\\Users\\Admin\\mr_fit\\backend\\mrfit_app\\rotas\\calculos.py', reloading
+2025-02-26 20:20:34,570 - WARNING -  * Debugger is active!
+2025-02-26 20:20:34,576 - INFO -  * Debugger PIN: 154-893-569
+2025-02-26 20:20:36,944 - ERROR - Ocorreu um erro ao calcular calorias: CalculoControle.calcular_calorias() got an unexpected keyword argument 'completo'
+Traceback (most recent call last):
+  File "C:\Users\Admin\mr_fit\backend\mrfit_app\rotas\calculos.py", line 25, in calcular
+    response, status_code = CalculoControle.calcular_calorias(dados, db, completo=False)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CalculoControle.calcular_calorias() got an unexpected keyword argument 'completo'
+2025-02-26 20:20:36,948 - INFO - DESKTOP-6J8R9MV - - [26/Feb/2025 20:20:36] "[35m[1mPOST /calculo/ HTTP/1.1[0m" 500 -
+2025-02-26 20:20:46,954 - ERROR - Ocorreu um erro ao calcular calorias: CalculoControle.calcular_calorias() got an unexpected keyword argument 'completo'
+Traceback (most recent call last):
+  File "C:\Users\Admin\mr_fit\backend\mrfit_app\rotas\calculos.py", line 25, in calcular
+    response, status_code = CalculoControle.calcular_calorias(dados, db, completo=False)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CalculoControle.calcular_calorias() got an unexpected keyword argument 'completo'
+2025-02-26 20:20:46,956 - INFO - DESKTOP-6J8R9MV - - [26/Feb/2025 20:20:46] "[35m[1mPOST /calculo/ HTTP/1.1[0m" 500 -
+2025-02-26 20:21:03,683 - INFO -  * Detected change in 'C:\\Users\\Admin\\mr_fit\\backend\\mrfit_app\\rotas\\calculos.py', reloading

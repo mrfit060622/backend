@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Nutricional Personalizado</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #34495e;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #2980b9;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 5px;
+            font-size: 1.8em;
+        }
+        p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #2980b9;
+            color: #fff;
+            font-size: 1.1em;
+        }
+        th, td {
+            font-size: 1em;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 30px 0;
+        }
+        li {
+            background: #fff;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-size: 1.1em;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: rgb(77, 75, 75);
+            font-weight: bold;
+            text-align: center;
+        }
+        .highlight {
+            color: rgb(55, 163, 52);
+            font-weight: bold;
+        }
+        .cta-button {
+            background-color: #51ca9c;
+            color: #fff;
+            padding: 15px 25px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            display: inline-block;
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        .cta-button:hover {
+            background-color: #3e9c73;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório Nutricional Personalizado</h1>
+    <h2>Olá, {{ nome }}!</h2>
+    <p><strong>Data de Geração:</strong> {{ data }}</p>
+
+    <h2>Resumo do Relatório</h2>
+    <p>Você deve consumir aproximadamente <strong>{{ calorias }} kcal</strong> diariamente para alcançar seu objetivo de <strong>{{ objetivo }}</strong>.</p>
+
+    <h2>Informações Básicas do Usuário</h2>
+    <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Idade</td><td>{{ idade }} anos</td></tr>
+        <tr><td>Peso</td><td>{{ peso }} kg</td></tr>
+        <tr><td>Altura</td><td>{{ altura }} cm</td></tr>
+        <tr><td>Sexo</td><td>{{ sexo }}</td></tr>
+        <tr><td>Nível de Atividade Física</td><td>{{ atividade }}</td></tr>
+        <tr><td>Objetivo</td><td>{{ objetivo }}</td></tr>
+        <tr><td>Cálorias Diárias</td><td>{{ calorias }} kcal</td></tr>
+    </table>
+    
+    <h2>Distribuição de Macronutrientes</h2>
+    <p>Veja abaixo a recomendação de macronutrientes para um plano nutricional balanceado:</p>
+    <table>
+        <tr><th>Macronutriente</th><th>Quantidade (g/dia)</th><th>Porcentagem</th></tr>
+        <tr>
+            <td>Carboidratos <i class="icon">🍞</i></td>
+            <td>{{ (calorias * 0.45 / 4) | round(0) }} g</td>
+            <td>45%</td>
+        </tr>
+        <tr>
+            <td>Proteínas <i class="icon">🍗</i></td>
+            <td>{{ (calorias * 0.35 / 4) | round(0) }} g</td>
+            <td>35%</td>
+        </tr>
+        <tr>
+            <td>Gorduras <i class="icon">🥑</i></td>
+            <td>{{ (calorias * 0.20 / 9) | round(0) }} g</td>
+            <td>20%</td>
+        </tr>
+    </table>
+
+    <h2>Sugestões de Refeições</h2>
+    <ul>
+        {% for refeicao in refeicoes %}
+        <li><strong>{{ refeicao.nome }}:</strong> {{ refeicao.descricao }} ({{ refeicao.calorias }} kcal) <i class="icon">🍽️</i></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Comentários Personalizados</h2>
+    <p>Para otimizar ainda mais seu plano, considere ajustar a ingestão de proteínas. Também recomendamos que você consulte um nutricionista para personalizar o plano conforme sua rotina e objetivos.</p>
+
+    <div class="footer">
+        <p>Este relatório é personalizado para ajudá-lo a alcançar seus objetivos nutricionais.</p>
+    </div>
+    
+    <div class="disclaimer">
+        <p><strong>Aviso:</strong> Este relatório tem caráter informativo e não substitui a orientação de um profissional de saúde. Para uma avaliação detalhada, consulte um nutricionista ou médico especializado.</p>
+    </div>
+</body>
+</html>
