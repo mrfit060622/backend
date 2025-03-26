@@ -5,8 +5,9 @@ from urllib.parse import urlparse
 def enviar_email(mail, email: str, pdf_filename: str, codigo: str) -> str:
     """Envia um e-mail com o link para download do PDF."""
     
+    api_host = current_app.config['API_HOST']
     # Definir a base da URL, corrigindo a formatação e usando http://
-    base_url = "https://mrfit-app-topaz.vercel.app/pdf/download/"
+    base_url = f"{api_host}/pdf/download/"
     pdf_url = f"{base_url}{codigo}"
 
     # Verificar se a URL está correta
