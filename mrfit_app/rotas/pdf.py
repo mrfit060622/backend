@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Blueprint, jsonify, request, send_from_directory
+from flask import Blueprint, jsonify, request, send_from_directory,current_app
 from flask_mail import Mail
 from mrfit_app.controles.pdf_controle import processar_pedido_pdf, processar_pedido_pdf_pg
 from mrfit_app.servicos.email_servico import enviar_email
@@ -23,6 +23,7 @@ codigos_arquivos = {}
 def gerar_pdf():
     """ Rota para gerar um PDF e enviar por e-mail. """
     try:
+        api_host = current_app.config['API_HOST']
         data = request.get_json()
         email = data.get("email")
 
@@ -41,7 +42,7 @@ def gerar_pdf():
 
         return jsonify({
             "message": "PDF gerado e enviado por e-mail!",
-            "download_url": f"{host_api}/pdf/download/{codigo}"  
+            "download_url": f"{api_host}:5000/pdf/download/{codigo}"  
         })
     except Exception as e:
         logging.error(f"Erro ao processar requisição: {e}")
@@ -51,6 +52,7 @@ def gerar_pdf():
 def gerar_pdf_pg():
     """ Rota para gerar um PDF e enviar por e-mail. """
     try:
+        api_host = current_app.config['API_HOST']
         data = request.get_json()
         email = data.get("email")
 
@@ -69,7 +71,7 @@ def gerar_pdf_pg():
 
         return jsonify({
             "message": "PDF gerado e enviado por e-mail!",
-            "download_url": f"http://192.168.100.151:5000/pdf/download/{codigo}"  
+            "download_url": f"{api_host}:5000/pdf/download/{codigo}"
         })
     except Exception as e:
         logging.error(f"Erro ao processar requisição: {e}")

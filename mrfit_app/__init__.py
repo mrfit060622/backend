@@ -14,7 +14,10 @@ def create_app():
     sslify = SSLify(app)  # Força HTTPS
     # Carrega as configurações da classe DatabaseConfig
     app.config.from_object(DatabaseConfig)
-
+     
+    
+    api_host = app.config.get('API_HOST', 'https://api.exemplo.com')
+    print (f"API Host configurado: {api_host}")
     # Inicializa as extensões
     db.init_app(app)
     mail.init_app(app)

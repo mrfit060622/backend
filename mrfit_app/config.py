@@ -29,9 +29,10 @@ class Config:
     # Verificação das configurações de e-mail
     if not all([MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_DEFAULT_SENDER]):
         raise ValueError("⚠️ ERRO: Variáveis de ambiente para configuração de e-mail não foram carregadas corretamente.")
-
+    
     # Configuração de API
-    HOST_API = os.getenv('HOST_API')
+    API_HOST = os.getenv('API_HOST', 'https://api.exemplo.com')
+
 # Banco de Dados - Configurações por Ambiente (Desenvolvimento, Produção, SQLite)
 class DatabaseConfig(Config):
     if ENV == 'development':
@@ -53,7 +54,7 @@ class DatabaseConfig(Config):
     else:  # Caso seja SQLite
         DB_URI = os.getenv('DB_URI', 'sqlite:///database.db')
         SQLALCHEMY_DATABASE_URI = DB_URI
-
+        
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Criando engine e sessão local corretamente dentro da classe
