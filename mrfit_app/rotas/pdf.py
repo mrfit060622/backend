@@ -41,7 +41,7 @@ def gerar_pdf():
 
         return jsonify({
             "message": "PDF gerado e enviado por e-mail!",
-            "download_url": f"http://192.168.100.151:5000/pdf/download/{codigo}"  
+            "download_url": f"{host_api}/pdf/download/{codigo}"  
         })
     except Exception as e:
         logging.error(f"Erro ao processar requisição: {e}")

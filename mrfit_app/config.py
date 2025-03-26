@@ -30,6 +30,8 @@ class Config:
     if not all([MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_DEFAULT_SENDER]):
         raise ValueError("⚠️ ERRO: Variáveis de ambiente para configuração de e-mail não foram carregadas corretamente.")
 
+    # Configuração de API
+    HOST_API = os.getenv('HOST_API')
 # Banco de Dados - Configurações por Ambiente (Desenvolvimento, Produção, SQLite)
 class DatabaseConfig(Config):
     if ENV == 'development':
