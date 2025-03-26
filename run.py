@@ -16,4 +16,4 @@ with app.app_context():
 # Verifica se estamos executando diretamente ou se o ambiente é de produção
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
