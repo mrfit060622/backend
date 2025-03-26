@@ -42,7 +42,7 @@ def gerar_pdf():
 
         return jsonify({
             "message": "PDF gerado e enviado por e-mail!",
-            "download_url": f"{api_host}:5000/pdf/download/{codigo}"  
+            "download_url": f"{api_host}/pdf/download/{codigo}"  
         })
     except Exception as e:
         logging.error(f"Erro ao processar requisição: {e}")
@@ -71,7 +71,7 @@ def gerar_pdf_pg():
 
         return jsonify({
             "message": "PDF gerado e enviado por e-mail!",
-            "download_url": f"{api_host}:5000/pdf/download/{codigo}"
+            "download_url": f"{api_host}/pdf/download/{codigo}"
         })
     except Exception as e:
         logging.error(f"Erro ao processar requisição: {e}")
