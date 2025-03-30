@@ -19,20 +19,19 @@ def gerar_pdf(data: Dict[str, str]) -> Tuple[str, str]:
     if not email:
         return None, "E-mail é obrigatório!"
 
-    pdf_filename = f"relatorio_{uuid.uuid4().hex}.pdf"  # Apenas nome aleatório para o arquivo
+    pdf_filename = f"relatorio_{uuid.uuid4().hex}.pdf"
     pdf_path = os.path.join(UPLOAD_FOLDER, pdf_filename)
 
     missing_fields = validar_dados_essenciais(data)
+
     if missing_fields:
         return None, f"Campos obrigatórios ausentes: {', '.join(missing_fields)}"
 
     html = render_template('pdf_template.html', **data)
 
-    pdf = HTML(string=html).write_pdf()
-
     try:
         with open(pdf_path, "wb") as f:
-            f.write(pdf)
+            f.write(HTML(string=html).write_pdf())
     except Exception as e:
         logging.error(f"Erro ao salvar o PDF: {e}")
         return None, f"Erro ao salvar o PDF: {e}"
