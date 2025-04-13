@@ -12,7 +12,7 @@ DB_USER = 'app_mrfit'
 DB_PASSWORD = '1234'
 DB_NAME = 'mrfit'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{3306}/{DB_NAME}"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{3306}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'sua-chave-secreta-aqui'  # Defina uma chave secreta adequada
 

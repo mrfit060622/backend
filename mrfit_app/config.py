@@ -2,13 +2,15 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from urllib.parse import quote_plus
 
 # Carregar variáveis do .env
 load_dotenv()
 
 # Configuração do ambiente
-ENV = os.getenv('FLASK_ENV', 'SQLITE')  # Agora assume 'development' como padrão
+ENV = os.getenv('FLASK_ENV', 'development')  # Agora assume 'development' como padrão
 
+# Configuração base comum para todos os ambientes
 class Config:
     """Configuração base comum para todos os ambientes"""
     SECRET_KEY = os.getenv('SECRET_KEY')
@@ -32,34 +34,21 @@ class Config:
     
     # Configuração de API
     API_HOST = os.getenv('API_HOST', 'https://api.exemplo.com')
-
-# Banco de Dados - Configurações por Ambiente (Desenvolvimento, Produção, SQLite)
-class DatabaseConfig(Config):
-    if ENV == 'development':
-        DB_HOST = os.getenv('DB_HOST_DEV')
-        DB_PORT = os.getenv('DB_PORT_DEV')
-        DB_USER = os.getenv('DB_USER_DEV')
-        DB_PASSWORD = os.getenv('DB_PASSWORD_DEV')
-        DB_NAME = os.getenv('DB_NAME_DEV')
-        SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-
-    elif ENV == 'production':
-        DB_HOST = os.getenv('DB_HOST_PROD')
-        DB_PORT = os.getenv('DB_PORT_PROD')
-        DB_USER = os.getenv('DB_USER_PROD')
-        DB_PASSWORD = os.getenv('DB_PASSWORD_PROD')
-        DB_NAME = os.getenv('DB_NAME_PROD')
-        SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-
-    else:  # Caso seja SQLite
-        DB_URI = os.getenv('DB_URI', 'sqlite:///database.db')
-        SQLALCHEMY_DATABASE_URI = DB_URI
-        
+    
+    # Configuração do banco de dados
+    DB_HOST = os.getenv('DB_HOST_DEV', 'localhost')
+    DB_PORT = os.getenv('DB_PORT_DEV', 3306)
+    DB_USER = os.getenv('DB_USER_DEV', 'root')
+    DB_PASSWORD = quote_plus(os.getenv('DB_PASSWORD_DEV'))  # Escapar caracteres especiais
+    DB_NAME = os.getenv('DB_NAME_DEV', 'mrfit_db')
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Criando engine e sessão local corretamente dentro da classe
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False} if 'sqlite' in SQLALCHEMY_DATABASE_URI else {})
+    # Criação do engine do banco de dados
+    engine = create_engine(SQLALCHEMY_DATABASE_URI)
+
+    # Criando a sessionmaker para a sessão local
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Agora, exportando a SessionLocal corretamente
-SessionLocal = DatabaseConfig.SessionLocal
+# Exportando a SessionLocal corretamente
+SessionLocal = Config.SessionLocal

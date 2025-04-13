@@ -8,14 +8,15 @@ from mrfit_app.modelos.calorias import Caloria
 import requests  # Para fazer a requisição ao serviço de cálculo de calorias
 
 def salvar_calorias(usuario_id, calorias):
+    """Salva as calorias do usuário no banco de dados"""
     try:
-        # Criando uma nova entrada para a tabela de calorias
-        nova_caloria = Caloria(id_usuario=usuario_id, valor_calorias=calorias)
-        db.session.add(nova_caloria)
-        db.session.commit()  # Confirma a operação no banco
-        print("Calorias salvas com sucesso!")
+        db.session.execute(
+            Caloria.__table__.insert(),  # Use a tabela de Caloria
+            {'id_usuario': usuario_id, 'valor_calorias': calorias}
+        )
+        db.session.commit()
     except Exception as e:
-        db.session.rollback()  # Desfaz qualquer operação em caso de erro
+        db.session.rollback()
         print(f"Erro ao salvar calorias: {str(e)}")
 
 def criar_usuario_service(nome, email, senha, idade, peso, altura, sexo, objetivo_id, atividade_id):

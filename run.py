@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-from mrfit_app import create_app
-from mrfit_app.db_setup import init_db  # Ajustado caminho da importação
+from mrfit_app import create_app,db
+
 
 # Carrega variáveis de ambiente do .env
 load_dotenv()
@@ -10,8 +10,14 @@ load_dotenv()
 app = create_app()
 
 # Inicializa o banco de dados apenas uma vez ao iniciar
+
 with app.app_context():
-    init_db()
+    try:
+        # Criar as tabelas no banco de dados
+        db.create_all()
+        print("✅ Banco de dados inicializado com sucesso!")
+    except Exception as e:
+        print(f"❌ Erro ao conectar ao banco de dados: {e}")
 
 # Verifica se estamos executando diretamente ou se o ambiente é de produção
 if __name__ == '__main__':
