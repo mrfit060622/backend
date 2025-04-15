@@ -8,8 +8,8 @@ ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
 def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parcelamento=1, token=None,
-                                  payment_method_id=None, payment_type_id=None, payer=None):
-    """Cria um pagamento via Pix ou Cartão"""
+                                  payment_method_id=None, payer=None):
+    """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
 
     metodo_pagamento = metodo_pagamento.lower()
 
@@ -27,7 +27,7 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
         if not token:
             return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
 
-        if not payment_method_id or not payment_type_id or not payer:
+        if not payment_method_id or not payer:
             return {"erro": "Informações de pagamento incompletas para cartão"}, 400
 
         pagamento_dados = {
@@ -36,8 +36,14 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
             "installments": int(parcelamento),
             "token": token,
             "payment_method_id": payment_method_id,
-            "payment_type_id": payment_type_id,
-            "payer": payer
+            "payer": {
+                "email": email,
+                "first_name": nome,
+                "identification": {
+                    "type": "CPF",
+                    "number": cpf
+                }
+            }
         }
 
     try:
@@ -82,6 +88,7 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
     )
 
     return retorno
+
 
 def consultar_status_pagamento(payment_id):
     """Consulta o status do pagamento pelo ID"""
