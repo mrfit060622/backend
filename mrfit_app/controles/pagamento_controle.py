@@ -1,6 +1,9 @@
 from mrfit_app.servicos.pagamento_servico import criar_pagamento_transparente, consultar_status_pagamento
 from mrfit_app.modelos.pagamentos import db, Pagamento, LogPagamento
 
+from mrfit_app.servicos.pagamento_servico import criar_pagamento_transparente, consultar_status_pagamento
+from mrfit_app.modelos.pagamentos import db, Pagamento, LogPagamento
+
 def processar_pagamento(dados):
     """Processa o pagamento com os dados recebidos."""
 
@@ -8,9 +11,8 @@ def processar_pagamento(dados):
     parcelamento = dados.get("parcelamento", 1)
     token = dados.get("token")
     metodo_pagamento = dados.get("payment_method_id", "").lower()
-    payment_method_id = dados.get("payment_method_id")
-    payment_type_id = dados.get("payment_type_id")
 
+    # Extrai o objeto 'payer' que vem do frontend
     payer = dados.get("payer", {})
     nome = payer.get("first_name")
     email = payer.get("email")
@@ -27,19 +29,10 @@ def processar_pagamento(dados):
     except (ValueError, TypeError):
         return {"erro": "Valor do pagamento inválido"}, 400
 
-    if metodo_pagamento not in ["pix"] and not token:
+    if metodo_pagamento != "pix" and not token:
         return {"erro": "Token do cartão é obrigatório para pagamentos com cartão"}, 400
 
-    # Monta o payer completo (para cartão)
-    payer_completo = {
-        "email": email,
-        "first_name": nome,
-        "identification": {
-            "type": "CPF",
-            "number": cpf
-        }
-    }
-
+    # Chamada ao serviço
     resultado = criar_pagamento_transparente(
         nome=nome,
         email=email,
@@ -47,18 +40,13 @@ def processar_pagamento(dados):
         valor=valor,
         metodo_pagamento=metodo_pagamento,
         parcelamento=parcelamento,
-        token=token,
-        payment_method_id=payment_method_id,
-        payment_type_id=payment_type_id,
-        payer=payer_completo
+        token=token
     )
 
     if isinstance(resultado, tuple):
         return resultado
 
     return resultado
-
-
 
 def processar_consulta(payment_id):
     """Consulta o status do pagamento na API externa."""

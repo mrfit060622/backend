@@ -24,27 +24,25 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
             }
         }
     else:
-        if not token:
-            return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
+         if not token:
+             return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
+     
+         pagamento_dados = {
+             "transaction_amount": float(valor),
+             "description": f"Pagamento - {nome}",
+             "installments": int(parcelamento),
+             "token": token,
+             "payment_method_id": metodo_pagamento,
+             "payer": {
+                 "email": email,
+                 "first_name": nome,
+                 "identification": {
+                     "type": "CPF",
+                     "number": cpf
+                 }
+             }
+         }
 
-        if not payment_method_id or not payer:
-            return {"erro": "Informações de pagamento incompletas para cartão"}, 400
-
-        pagamento_dados = {
-            "transaction_amount": float(valor),
-            "description": f"Pagamento - {nome}",
-            "installments": int(parcelamento),
-            "token": token,
-            "payment_method_id": payment_method_id,
-            "payer": {
-                "email": email,
-                "first_name": nome,
-                "identification": {
-                    "type": "CPF",
-                    "number": cpf
-                }
-            }
-        }
 
     try:
         pagamento = sdk.payment().create(pagamento_dados)
