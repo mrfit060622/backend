@@ -3,7 +3,6 @@ import os
 from mrfit_app import db
 from mrfit_app.modelos.pagamentos import Pagamento, LogPagamento
 from datetime import datetime
-import logging
 
 
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
@@ -36,21 +35,17 @@ def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelame
                 "first_name": nome,
                 "identification": {
                     "type": "CPF",
-                    "number": "40841868808"
+                    "number": "12345678909"
                 }
             }
         }
 
-    logging.info(f"Dados do pagamento enviados: {pagamento_dados}")
-    
     pagamento = sdk.payment().create(pagamento_dados)
-    logging.info(f"Resposta da API do MercadoPago: {pagamento}")
-    
-    resposta = pagamento.get("response", {})
+    print(pagamento.get("status"))
+    resposta = pagamento["response"]
 
-    if "id" not in resposta:
+    if not resposta or resposta.get("erro"):
         erro_msg = resposta.get("message", "Erro ao processar pagamento")
-        logging.error(f"Erro ao processar pagamento. Mensagem: {erro_msg}, Detalhes: {resposta}")
         return {"erro": erro_msg, "detalhes": resposta}, 400
 
     retorno = {
