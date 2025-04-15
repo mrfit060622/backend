@@ -37,7 +37,8 @@ def processar_pagamento(dados):
         valor=valor,
         metodo_pagamento=metodo_pagamento,
         parcelamento=parcelamento,
-        token=token
+        token=token,
+        cpf=cpf
     )
 
     # Se houve erro com código de status
