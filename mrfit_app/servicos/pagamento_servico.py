@@ -31,16 +31,18 @@ def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelame
             "description": f"Pagamento - {nome}",
             "installments": int(parcelamento),
             "token": token,
-            "payment_method_id": metodo_pagamento,  # Agora incluso!
+            "payment_method_id": metodo_pagamento.lower(),  # exemplo: "master"
+            "payment_type_id": "credit_card",  # ou "debit_card" se for débito!
             "payer": {
                 "email": email,
                 "first_name": nome,
                 "identification": {
                     "type": "CPF",
-                    "number": "12345678909"  # Ideal: receber como parâmetro
+                    "number": "12345678909"
                 }
             }
         }
+
 
     try:
         pagamento = sdk.payment().create(pagamento_dados)
