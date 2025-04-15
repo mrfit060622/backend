@@ -7,7 +7,8 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelamento=1, token=None):
+def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelamento=1, token=None,
+                                  payment_method_id=None, payment_type_id=None, payer=None):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
 
     metodo_pagamento = metodo_pagamento.lower()
@@ -26,23 +27,18 @@ def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelame
         if not token:
             return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
 
+        if not payment_method_id or not payment_type_id or not payer:
+            return {"erro": "Informações de pagamento incompletas para cartão"}, 400
+
         pagamento_dados = {
             "transaction_amount": float(valor),
             "description": f"Pagamento - {nome}",
             "installments": int(parcelamento),
             "token": token,
-            "payment_method_id": metodo_pagamento.lower(),  # exemplo: "master"
-            "payment_type_id": "credit_card",  # ou "debit_card" se for débito!
-            "payer": {
-                "email": email,
-                "first_name": nome,
-                "identification": {
-                    "type": "CPF",
-                    "number": "12345678909"
-                }
-            }
+            "payment_method_id": payment_method_id,
+            "payment_type_id": payment_type_id,
+            "payer": payer
         }
-
 
     try:
         pagamento = sdk.payment().create(pagamento_dados)
