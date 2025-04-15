@@ -4,15 +4,16 @@ from mrfit_app.modelos.pagamentos import db, Pagamento, LogPagamento
 def processar_pagamento(dados):
     """Processa o pagamento com os dados recebidos."""
 
-    nome = dados.get("nome")
-    email = dados.get("email")
     valor = dados.get("valor")
-    metodo_pagamento = dados.get("metodo_pagamento", "").lower()
     parcelamento = dados.get("parcelamento", 1)
     token = dados.get("token")
-    payment_method_id = dados.get("payment_method_id")
-    payment_type_id = dados.get("payment_type_id")
-    payer = dados.get("payer")
+    metodo_pagamento = dados.get("payment_method_id", "").lower()
+    
+    # Extrai dados do payer
+    payer = dados.get("payer", {})
+    nome = payer.get("first_name")
+    email = payer.get("email")
+    cpf = payer.get("identification", {}).get("number")
 
     # Validação básica
     if not all([nome, email, valor, metodo_pagamento]):
@@ -25,25 +26,26 @@ def processar_pagamento(dados):
     except (ValueError, TypeError):
         return {"erro": "Valor do pagamento inválido"}, 400
 
-    if metodo_pagamento not in ["pix"] and not token:
+    # Token é obrigatório para cartão de crédito/débito
+    if metodo_pagamento not in ["pix", "boleto", "bolbradesco", "pec"] and not token:
         return {"erro": "Token do cartão é obrigatório para pagamentos com cartão"}, 400
 
+    # Chama o serviço de pagamento
     resultado = criar_pagamento_transparente(
         nome=nome,
         email=email,
         valor=valor,
         metodo_pagamento=metodo_pagamento,
         parcelamento=parcelamento,
-        token=token,
-        payment_method_id=payment_method_id,
-        payment_type_id=payment_type_id,
-        payer=payer
+        token=token
     )
 
+    # Se houve erro com código de status
     if isinstance(resultado, tuple):
         return resultado
 
     return resultado
+
 
 
 def processar_consulta(payment_id):
