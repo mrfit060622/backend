@@ -10,7 +10,7 @@ sdk = mercadopago.SDK(ACCESS_TOKEN)
 
 def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelamento=1, token=None):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
-
+    
     if metodo_pagamento.lower() == "pix":
         pagamento_dados = {
             "transaction_amount": float(valor),
@@ -40,11 +40,20 @@ def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelame
             }
         }
 
-    pagamento = sdk.payment().create(pagamento_dados)
-    print(pagamento.get("status"))
-    resposta = pagamento["response"]
+    try:
+        pagamento = sdk.payment().create(pagamento_dados)
+    except Exception as e:
+        return {"erro": "Erro ao conectar com a API do Mercado Pago", "detalhes": str(e)}, 500
 
-    if not resposta or resposta.get("erro"):
+    if pagamento.get("status") != 201:
+        erro_msg = pagamento.get("message", "Erro ao processar pagamento")
+        return {"erro": erro_msg, "detalhes": pagamento}, 400
+
+    resposta = pagamento.get("response", {})
+    if not resposta:
+        return {"erro": "Resposta inválida da API do Mercado Pago"}, 500
+
+    if resposta.get("erro"):
         erro_msg = resposta.get("message", "Erro ao processar pagamento")
         return {"erro": erro_msg, "detalhes": resposta}, 400
 
@@ -75,9 +84,7 @@ def criar_pagamento_transparente(nome, email, valor, metodo_pagamento, parcelame
         status=resposta["status"],
         status_detail=resposta.get("status_detail")
     )
-
     return retorno
-
 
 def consultar_status_pagamento(payment_id):
     """Consulta o status do pagamento pelo ID"""
