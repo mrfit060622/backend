@@ -7,9 +7,9 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(nome, email,cpf, valor, metodo_pagamento, parcelamento=1, token=None,
+def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parcelamento=1, token=None,
                                   payment_method_id=None, payment_type_id=None, payer=None):
-    """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
+    """Cria um pagamento via Pix ou Cartão"""
 
     metodo_pagamento = metodo_pagamento.lower()
 
@@ -38,7 +38,6 @@ def criar_pagamento_transparente(nome, email,cpf, valor, metodo_pagamento, parce
             "payment_method_id": payment_method_id,
             "payment_type_id": payment_type_id,
             "payer": payer
-            "cpf": cpf
         }
 
     try:
