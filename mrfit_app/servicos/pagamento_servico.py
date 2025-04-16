@@ -7,8 +7,7 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(email, valor,nome,sobrenome,cpf, metodo_pagamento,parcelamento=1, token=None,
-                                  payment_method_id=None, payer=None):
+def criar_pagamento_transparente(email, valor,nome,sobrenome,nr_cpf, metodo_pagamento,parcelamento, token, tp_doc):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
 
     metodo_pagamento = metodo_pagamento.lower()
@@ -38,12 +37,12 @@ def criar_pagamento_transparente(email, valor,nome,sobrenome,cpf, metodo_pagamen
                  "first_name": nome,
                  "last_name":sobrenome,
                  "identification": {
-                     "type": "CPF",
-                     "number": cpf
+                     "type": tp_doc,
+                     "number": nr_cpf
                  }
              }
          }
-
+    print (f"Dados do pagamento: {pagamento_dados}")
     try:
         pagamento = sdk.payment().create(pagamento_dados)
     except Exception as e:

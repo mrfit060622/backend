@@ -15,8 +15,9 @@ def processar_pagamento(dados):
     email = payer.get("email")
     nome = payer.get("nome")
     sobrenome = payer.get("sobrenome")
-    identification = dados.get("identification", {})
-    cpf = identification.get ("cpf")        
+    identification = payer.get("identification", {})
+    tp_doc = identification.get ("tp_doc")   
+    nr_cpf = identification.get ("nr_cpf")        
 
     # Validação básica
     if not all([email, valor, metodo_pagamento]):
@@ -40,7 +41,8 @@ def processar_pagamento(dados):
         metodo_pagamento=metodo_pagamento,
         parcelamento=parcelamento,
         token=token,
-        cpf = cpf
+        nr_cpf = nr_cpf,
+        tp_doc = tp_doc
     )
 
     if isinstance(resultado, tuple):
