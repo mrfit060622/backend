@@ -6,20 +6,19 @@ from mrfit_app.modelos.pagamentos import db, Pagamento, LogPagamento
 
 def processar_pagamento(dados):
     """Processa o pagamento com os dados recebidos."""
-
     valor = dados.get("valor")
-    parcelamento = dados.get("parcelamento", 1)
     token = dados.get("token")
-    metodo_pagamento = dados.get("payment_method_id", "").lower()
+    nome = dados.get("nome","").lower()
+    metodo_pagamento = dados.get("metodo_pagamento", "").lower()
+    parcelamento = dados.get("parcelamento", 1)
 
     # Extrai o objeto 'payer' que vem do frontend
     payer = dados.get("payer", {})
-    nome = payer.get("first_name")
     email = payer.get("email")
-    cpf = payer.get("identification", {}).get("number")
+    
 
     # Validação básica
-    if not all([nome, email, valor, metodo_pagamento]):
+    if not all([email, valor, metodo_pagamento]):
         return {"erro": "Nome, email, valor e método de pagamento são obrigatórios"}, 400
 
     try:
@@ -34,13 +33,12 @@ def processar_pagamento(dados):
 
     # Chamada ao serviço
     resultado = criar_pagamento_transparente(
-        nome=nome,
         email=email,
-        cpf=cpf,
         valor=valor,
         metodo_pagamento=metodo_pagamento,
         parcelamento=parcelamento,
-        token=token
+        token=token,
+        nome=nome
     )
 
     if isinstance(resultado, tuple):

@@ -6,7 +6,7 @@ class Pagamento(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
-    nome = db.Column(db.String(100), nullable=False)
+    nome = db.Column(db.String(100), nullable=True)
     payment_id = db.Column(db.String(50), unique=True, nullable=False)
     valor = db.Column(db.Numeric(10, 2), nullable=False)  # Usando Numeric para precisão
     metodo_pagamento = db.Column(db.String(50), nullable=False)  # Ex: "pix", "visa", "mastercard"

@@ -7,7 +7,7 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parcelamento=1, token=None,
+def criar_pagamento_transparente(email, valor,nome, metodo_pagamento,parcelamento=1, token=None,
                                   payment_method_id=None, payer=None):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
 
@@ -19,8 +19,7 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
             "description": f"Pagamento - {nome}",
             "payment_method_id": "pix",
             "payer": {
-                "email": email,
-                "first_name": nome
+                "email": email
             }
         }
     else:
@@ -29,19 +28,16 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
      
          pagamento_dados = {
              "transaction_amount": float(valor),
-             "description": f"Pagamento - {nome}",
-             "installments": int(parcelamento),
              "token": token,
              "payment_method_id": metodo_pagamento,
+             "description": f"Pagamento - {nome}",
+             "installments": int(parcelamento),
              "payer": {
-                 "email": email,
-                 "first_name": nome,
-                 "identification": {
-                     "type": "CPF",
-                     "number": cpf
+                 "email": email
                  }
              }
-         }
+         
+
 
 
     try:
@@ -84,6 +80,7 @@ def criar_pagamento_transparente(nome, email, cpf, valor, metodo_pagamento, parc
         status=resposta["status"],
         status_detail=resposta.get("status_detail")
     )
+
 
     return retorno
 
