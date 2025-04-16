@@ -8,14 +8,15 @@ def processar_pagamento(dados):
     """Processa o pagamento com os dados recebidos."""
     valor = dados.get("valor")
     token = dados.get("token")
-    nome = dados.get("nome","").lower()
     metodo_pagamento = dados.get("metodo_pagamento", "").lower()
     parcelamento = dados.get("parcelamento", 1)
 
-    # Extrai o objeto 'payer' que vem do frontend
     payer = dados.get("payer", {})
     email = payer.get("email")
-    
+    nome = payer.get("nome")
+    sobrenome = payer.get("sobrenome")
+    identification = dados.get("identification", {})
+    cpf = identification.get ("cpf")        
 
     # Validação básica
     if not all([email, valor, metodo_pagamento]):
@@ -31,14 +32,15 @@ def processar_pagamento(dados):
     if metodo_pagamento != "pix" and not token:
         return {"erro": "Token do cartão é obrigatório para pagamentos com cartão"}, 400
 
-    # Chamada ao serviço
     resultado = criar_pagamento_transparente(
-        email=email,
         valor=valor,
+        email=email,
+        nome = nome,
+        sobrenome = sobrenome,
         metodo_pagamento=metodo_pagamento,
         parcelamento=parcelamento,
         token=token,
-        nome=nome
+        cpf = cpf
     )
 
     if isinstance(resultado, tuple):

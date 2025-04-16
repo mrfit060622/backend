@@ -7,7 +7,7 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(email, valor,nome, metodo_pagamento,parcelamento=1, token=None,
+def criar_pagamento_transparente(email, valor,nome,sobrenome,cpf, metodo_pagamento,parcelamento=1, token=None,
                                   payment_method_id=None, payer=None):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
 
@@ -22,6 +22,7 @@ def criar_pagamento_transparente(email, valor,nome, metodo_pagamento,parcelament
                 "email": email
             }
         }
+
     else:
          if not token:
              return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
@@ -33,12 +34,15 @@ def criar_pagamento_transparente(email, valor,nome, metodo_pagamento,parcelament
              "description": f"Pagamento - {nome}",
              "installments": int(parcelamento),
              "payer": {
-                 "email": email
+                 "email": email,
+                 "first_name": nome,
+                 "last_name":sobrenome,
+                 "identification": {
+                     "type": "CPF",
+                     "number": cpf
                  }
              }
-         
-
-
+         }
 
     try:
         pagamento = sdk.payment().create(pagamento_dados)
