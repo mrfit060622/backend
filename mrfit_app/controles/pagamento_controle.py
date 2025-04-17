@@ -4,7 +4,9 @@ import uuid
 
 def processar_pagamento(dados):
     """Processa o pagamento com os dados recebidos."""
+
     uuid_requisicao = str(uuid.uuid4())
+    print(f"[DEBUG] UUID da requisição gerado: {uuid_requisicao}")
 
     valor = dados.get("valor")
     token = dados.get("token")
@@ -20,6 +22,7 @@ def processar_pagamento(dados):
     nr_cpf = identification.get("nr_cpf")
 
     if not all([email, valor, metodo_pagamento]):
+        _registrar_log(uuid_requisicao, None, "falha", "Campos obrigatórios ausentes")
         return {"erro": "Nome, email, valor e método de pagamento são obrigatórios"}, 400
 
     try:
@@ -27,12 +30,14 @@ def processar_pagamento(dados):
         if valor <= 0:
             raise ValueError
     except (ValueError, TypeError):
+        _registrar_log(uuid_requisicao, None, "falha", "Valor inválido")
         return {"erro": "Valor do pagamento inválido"}, 400
 
     if metodo_pagamento != "pix" and not token:
+        _registrar_log(uuid_requisicao, None, "falha", "Token ausente em pagamento com cartão")
         return {"erro": "Token do cartão é obrigatório para pagamentos com cartão"}, 400
 
-    resultado = pagamento_mp(
+    resultado = criar_pagamento_transparente(
         valor=valor,
         email=email,
         nome=nome,
@@ -44,18 +49,8 @@ def processar_pagamento(dados):
         tp_doc=tp_doc
     )
 
-    # Em caso de falha no pagamento
     if isinstance(resultado, tuple):
-        status = resultado[0].get("erro", "erro")
-        detalhes = resultado[0]
-        log = LogPagamento(
-            uuid_requisicao=uuid_requisicao,
-            pagamento_id=None,
-            status="falha",
-            detalhes=str(detalhes)
-        )
-        db.session.add(log)
-        db.session.commit()
+        _registrar_log(uuid_requisicao, None, "falha", str(resultado[0]))
         return resultado
 
     # Registro no banco
@@ -72,21 +67,26 @@ def processar_pagamento(dados):
     db.session.add(pagamento)
     db.session.commit()
 
-    log = LogPagamento(
-        uuid_requisicao=uuid_requisicao,
-        pagamento_id=pagamento.id,
-        status=resultado.get("status"),
-        detalhes=str(resultado)
-    )
-    db.session.add(log)
-    db.session.commit()
+    _registrar_log(uuid_requisicao, pagamento.id, resultado.get("status"), str(resultado))
 
     return {
         "mensagem": "Pagamento registrado com sucesso",
         "uuid_requisicao": uuid_requisicao,
         "status": resultado.get("status"),
-        "payment_id": resultado.get("id")
+        "payment_id": resultado.get("id"),
+        "qr_code": resultado.get("qr_code", None),
+        "ticket_url": resultado.get("ticket_url", None)
     }
+
+def _registrar_log(uuid_requisicao, pagamento_id, status, detalhes):
+    log = LogPagamento(
+        uuid_requisicao=uuid_requisicao,
+        pagamento_id=pagamento_id,
+        status=status,
+        detalhes=detalhes
+    )
+    db.session.add(log)
+    db.session.commit()
 
 
 def processar_consulta(payment_id):

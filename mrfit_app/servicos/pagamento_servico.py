@@ -7,9 +7,8 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(email, valor,nome,sobrenome,nr_cpf, metodo_pagamento,parcelamento, token, tp_doc):
+def criar_pagamento_transparente(email, valor, nome, sobrenome, nr_cpf, metodo_pagamento, parcelamento, token, tp_doc):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
-
     metodo_pagamento = metodo_pagamento.lower()
 
     if metodo_pagamento == "pix":
@@ -21,28 +20,27 @@ def criar_pagamento_transparente(email, valor,nome,sobrenome,nr_cpf, metodo_paga
                 "email": email
             }
         }
-
     else:
-         if not token:
-             return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
-     
-         pagamento_dados = {
-             "transaction_amount": float(valor),
-             "token": token,
-             "payment_method_id": metodo_pagamento,
-             "description": f"Pagamento - {nome}",
-             "installments": int(parcelamento),
-             "payer": {
-                 "email": email,
-                 "first_name": nome,
-                 "last_name":sobrenome,
-                 "identification": {
-                     "type": tp_doc,
-                     "number": nr_cpf
-                 }
-             }
-         }
-    print (f"Dados do pagamento: {pagamento_dados}")
+        if not token:
+            return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
+
+        pagamento_dados = {
+            "transaction_amount": float(valor),
+            "token": token,
+            "payment_method_id": metodo_pagamento,
+            "description": f"Pagamento - {nome}",
+            "installments": int(parcelamento),
+            "payer": {
+                "email": email,
+                "first_name": nome,
+                "last_name": sobrenome,
+                "identification": {
+                    "type": tp_doc,
+                    "number": nr_cpf
+                }
+            }
+        }
+
     try:
         pagamento = sdk.payment().create(pagamento_dados)
     except Exception as e:
@@ -59,9 +57,11 @@ def criar_pagamento_transparente(email, valor,nome,sobrenome,nr_cpf, metodo_paga
         return {"erro": "Resposta inválida da API do Mercado Pago"}, 500
 
     retorno = {
-        "payment_id": resposta["id"],
+        "id": resposta["id"],
         "status": resposta["status"],
-        "status_detail": resposta.get("status_detail")
+        "status_detail": resposta.get("status_detail"),
+        "metodo_pagamento": metodo_pagamento,
+        "valor": valor
     }
 
     poi = resposta.get("point_of_interaction", {})
@@ -73,19 +73,8 @@ def criar_pagamento_transparente(email, valor,nome,sobrenome,nr_cpf, metodo_paga
     elif tx_data.get("ticket_url"):
         retorno["ticket_url"] = tx_data["ticket_url"]
 
-    salvar_pagamento_no_banco(
-        payment_id=resposta["id"],
-        nome=nome,
-        email=email,
-        valor=valor,
-        metodo_pagamento=metodo_pagamento,
-        parcelamento=parcelamento,
-        status=resposta["status"],
-        status_detail=resposta.get("status_detail")
-    )
-
-
     return retorno
+
 
 
 def consultar_status_pagamento(payment_id):
