@@ -1,4 +1,5 @@
 import mercadopago
+from mercadopago.config import RequestOptions
 import os
 from mrfit_app import db
 from mrfit_app.modelos.pagamentos import Pagamento, LogPagamento
@@ -7,9 +8,15 @@ from datetime import datetime
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
-def criar_pagamento_transparente(email, valor, nome, sobrenome, nr_cpf, metodo_pagamento, parcelamento, token, tp_doc):
+
+
+def criar_pagamento_transparente(email, valor, nome, sobrenome, nr_cpf, metodo_pagamento, parcelamento, token, tp_doc,uuid_requisicao):
     """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
     metodo_pagamento = metodo_pagamento.lower()
+    request_options = mercadopago.config.RequestOptions()
+    request_options.custom_headers = {
+    'x-idempotency-key': uuid_requisicao
+}
 
     if metodo_pagamento == "pix":
         pagamento_dados = {
@@ -40,9 +47,10 @@ def criar_pagamento_transparente(email, valor, nome, sobrenome, nr_cpf, metodo_p
                 }
             }
         }
+    print (pagamento_dados, uuid_requisicao)
 
     try:
-        pagamento = sdk.payment().create(pagamento_dados)
+        pagamento = sdk.payment().create(pagamento_dados, request_options)
     except Exception as e:
         return {"erro": "Erro ao conectar com a API do Mercado Pago", "detalhes": str(e)}, 500
 

@@ -46,7 +46,8 @@ def processar_pagamento(dados):
         parcelamento=parcelamento,
         token=token,
         nr_cpf=nr_cpf,
-        tp_doc=tp_doc
+        tp_doc=tp_doc,
+        uuid_requisicao = uuid_requisicao
     )
 
     if isinstance(resultado, tuple):
