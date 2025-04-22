@@ -4,13 +4,13 @@ import mercadopago
 
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
-mp = mercadopago.MP(ACCESS_TOKEN)
-
 pagamento_bp = Blueprint("pagamento", __name__)
 
 @pagamento_bp.route('/checkout', methods=['POST'])
 def checkout():
     # Recebe os dados enviados pelo front-end
+    mp = mercadopago.MP(ACCESS_TOKEN)
+    
     payment_data = request.get_json()
     transaction_amount = payment_data.get("transactionAmount")  # Valor do pagamento
     description = payment_data.get("description")  # Descrição do pagamento
@@ -47,7 +47,7 @@ def checkout():
     preference = mp.create_preference(preference_data)
 
     # Obter a URL para redirecionamento ao Mercado Pago
-     if preference['status'] == '200':
+    if preference['status'] == '200':
         init_point = preference['response']['init_point']
         return jsonify({'status': 'success', 'init_point': init_point})
     else:
