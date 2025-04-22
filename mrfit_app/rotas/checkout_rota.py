@@ -2,16 +2,23 @@ import os
 from flask import Blueprint, request, jsonify, redirect
 import mercadopago
 
-@app.route('/pagamento/checkout', methods=['POST'])
-def checkout():
-    # Configurar o Mercado Pago com o Access Token
-    MP = mercadopago.MP(ACCESS_TOKEN)
-    data = request.json
-    transaction_amount = data['transactionAmount']
-    description = data['description']
-    payer_email = data['payerEmail']
-    payer_name = data['payerName']
+ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
+mp = mercadopago.MP(ACCESS_TOKEN)
+
+pagamento_bp = Blueprint("pagamento", __name__)
+
+@pagamento_bp.route('/checkout', methods=['POST'])
+def checkout():
+    # Recebe os dados enviados pelo front-end
+    payment_data = request.get_json()
+    transaction_amount = payment_data.get("transactionAmount")  # Valor do pagamento
+    description = payment_data.get("description")  # Descrição do pagamento
+    payer_email = payment_data.get("payerEmail")  # E-mail do pagador
+    payer_name = payment_data.get("payerName")  # Nome do pagador
+    payment_method = payment_data.get("paymentMethod")  # Método de pagamento (ex: "pix")
+
+    # Dados do pagamento para o Mercado Pago
     preference_data = {
         'items': [
             {
@@ -36,10 +43,11 @@ def checkout():
         'auto_return': 'approved',
     }
 
-    # Cria a preferência de pagamento
+    # Criação da preferência no Mercado Pago
     preference = mp.create_preference(preference_data)
 
-    if preference['status'] == '200':
+    # Obter a URL para redirecionamento ao Mercado Pago
+     if preference['status'] == '200':
         init_point = preference['response']['init_point']
         return jsonify({'status': 'success', 'init_point': init_point})
     else:
