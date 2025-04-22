@@ -30,6 +30,7 @@ def create_app():
     from mrfit_app.rotas.calculos_rota import bp_calculo
     from mrfit_app.rotas.pdf import pdf_bp
     from mrfit_app.rotas.pagamento import pagamento_bp
+    from mrfit_app.rotas.checkout_rota import pagamento_bp
     from mrfit_app.rotas.notificacoes import bp_notificacoes
 
     # Registro dos blueprints

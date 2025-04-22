@@ -13,6 +13,7 @@ class Pagamento(db.Model):
     valor = db.Column(db.Numeric(10, 2), nullable=False)
     metodo_pagamento = db.Column(db.String(50), nullable=False)
     parcelamento = db.Column(db.Integer, default=1)
+    issuer_id = db.Column (db.Integer, nullable = True)
     status = db.Column(db.String(20), default="pendente")
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
