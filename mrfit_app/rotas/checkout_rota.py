@@ -9,8 +9,8 @@ pagamento_bp = Blueprint("pagamento", __name__)
 @pagamento_bp.route('/checkout', methods=['POST'])
 def checkout():
     # Recebe os dados enviados pelo front-end
-    mp = mercadopago.MP(ACCESS_TOKEN)
-    
+    mp = mercadopago.SDK(ACCESS_TOKEN)
+
     payment_data = request.get_json()
     transaction_amount = payment_data.get("transactionAmount")  # Valor do pagamento
     description = payment_data.get("description")  # Descrição do pagamento
