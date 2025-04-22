@@ -9,7 +9,7 @@ pagamento_bp = Blueprint("pagamento", __name__)
 @pagamento_bp.route('/checkout', methods=['POST'])
 def checkout():
     # Recebe os dados enviados pelo front-end
-    mp = mercadopago.SDK(ACCESS_TOKEN)
+    sdk = mercadopago.SDK(ACCESS_TOKEN)
 
     payment_data = request.get_json()
     transaction_amount = payment_data.get("transactionAmount")  # Valor do pagamento
@@ -44,11 +44,15 @@ def checkout():
     }
 
     # Criação da preferência no Mercado Pago
-    preference = mp.create_preference(preference_data)
+    preference = sdk.preference().create(preference_data)
 
     # Obter a URL para redirecionamento ao Mercado Pago
-    if preference['status'] == '200':
-        init_point = preference['response']['init_point']
-        return jsonify({'status': 'success', 'init_point': init_point})
+    if preference['status'] == 201:
+       init_point = preference['response']['init_point']
+       return jsonify({'status': 'success', 'init_point': init_point})
     else:
-        return jsonify({'status': 'error', 'message': 'Erro ao criar preferência de pagamento'})
+       return jsonify({
+          'status': 'error',
+          'message': 'Erro ao criar preferência de pagamento',
+          'error_detail': preference  # <== Adicionado para debug
+        })
