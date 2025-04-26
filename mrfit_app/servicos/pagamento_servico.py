@@ -1,129 +1,32 @@
-import mercadopago
-from mercadopago.config import RequestOptions
-import os
+
+from sqlalchemy.exc import SQLAlchemyError
+from modelos.pedido_relatorio import PedidoRelatorio
 from mrfit_app import db
-from mrfit_app.modelos.pagamentos import Pagamento, LogPagamento
-from datetime import datetime
 
-ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
-sdk = mercadopago.SDK(ACCESS_TOKEN)
-
-
-
-def criar_pagamento_transparente(email, valor, nome, sobrenome, nr_cpf, metodo_pagamento, parcelamento,issuer_id, token, tp_doc,uuid_requisicao):
-    """Cria um pagamento via Pix, Cartão de Crédito ou Débito"""
-    metodo_pagamento = metodo_pagamento.lower()
-    request_options = mercadopago.config.RequestOptions()
-    request_options.custom_headers = {
-    'x-idempotency-key': uuid_requisicao
-}
-
-    if metodo_pagamento == "pix":
-        pagamento_dados = {
-            "transaction_amount": float(valor),
-            "description": f"Pagamento - {nome}",
-            "payment_method_id": "pix",
-            "payer": {
-                "email": email
-            }
-        }
-    else:
-        if not token:
-            return {"erro": "Token de cartão obrigatório para pagamento com cartão"}, 400
-
-        pagamento_dados = {
-            "transaction_amount": float(valor),
-            "token": token,
-            "payment_method_id": metodo_pagamento,
-            "description": f"Pagamento - {nome}",
-            "installments": int(parcelamento),
-            "issuer_id" : issuer_id,
-            "payer": {
-                "email": email,
-                "first_name": nome,
-                "last_name": sobrenome,
-                "identification": {
-                    "type": tp_doc,
-                    "number": nr_cpf
-            }
-        }
-    }
-    print (pagamento_dados, uuid_requisicao)
-
+def registrar_pagamento(email, codigo_pagamento):
+    """Registra um pagamento no banco de dados."""
+    session = SessionLocal()
     try:
-        pagamento = sdk.payment().create(pagamento_dados, request_options)
-    except Exception as e:
-        return {"erro": "Erro ao conectar com a API do Mercado Pago", "detalhes": str(e)}, 500
+        pagamento_existente = session.query(Pagamento).filter_by(email=email).first()
+        if pagamento_existente:
+            pagamento_existente.codigo_pagamento = codigo_pagamento
+        else:
+            novo_pagamento = Pagamento(email=email, codigo_pagamento=codigo_pagamento)
+            session.add(novo_pagamento)
+        session.commit()
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(f"Erro ao registrar pagamento: {e}")
+    finally:
+        session.close()
 
-    if pagamento.get("status") != 201:
-        return {
-            "erro": pagamento.get("message", "Erro ao processar pagamento"),
-            "detalhes": pagamento
-        }, pagamento.get("status", 400)
-
-    resposta = pagamento.get("response", {})
-    if not resposta:
-        return {"erro": "Resposta inválida da API do Mercado Pago"}, 500
-
-    retorno = {
-        "id": resposta["id"],
-        "status": resposta["status"],
-        "status_detail": resposta.get("status_detail"),
-        "metodo_pagamento": metodo_pagamento,
-        "valor": valor
-    }
-
-    poi = resposta.get("point_of_interaction", {})
-    tx_data = poi.get("transaction_data", {})
-
-    if metodo_pagamento == "pix":
-        retorno["qr_code"] = tx_data.get("qr_code")
-        retorno["ticket_url"] = tx_data.get("ticket_url")
-    elif tx_data.get("ticket_url"):
-        retorno["ticket_url"] = tx_data["ticket_url"]
-
-    return retorno
-
-
-
-def consultar_status_pagamento(payment_id):
-    """Consulta o status do pagamento pelo ID"""
-    pagamento = sdk.payment().get(payment_id)
-    resposta = pagamento["response"]
-    return {
-        "payment_id": resposta["id"],
-        "status": resposta["status"],
-        "status_detail": resposta["status_detail"]
-    }
-
-def salvar_pagamento_no_banco(payment_id, nome, email, valor, metodo_pagamento, parcelamento, status, status_detail):
-    """Salva o pagamento e seu log no banco de dados."""
-    pagamento = Pagamento(
-        payment_id=payment_id,
-        nome=nome,
-        email=email,
-        valor=valor,
-        metodo_pagamento=metodo_pagamento,
-        parcelamento=parcelamento,
-        status=status,
-    )
-    db.session.add(pagamento)
-    db.session.flush()
-
-    log = LogPagamento(
-        pagamento_id=pagamento.id,
-        status=status,
-        detalhes=status_detail
-    )
-    db.session.add(log)
-    db.session.commit()
-
-def salvar_log_pagamento(pagamento_id, status, detalhes):
-    log = LogPagamento(
-        pagamento_id=pagamento_id,
-        status=status,
-        detalhes=detalhes,
-        criado_em=datetime.utcnow()
-    )
-    db.session.add(log)
-    db.session.commit()
+def verificar_pagamento(email):
+    """Verifica se o pagamento do usuário já foi registrado."""
+    session = SessionLocal()
+    try:
+        return session.query(Pagamento).filter_by(email=email).first() is not None
+    except SQLAlchemyError as e:
+        print(f"Erro ao verificar pagamento: {e}")
+        return False
+    finally:
+        session.close()
