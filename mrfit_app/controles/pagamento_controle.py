@@ -1,95 +1,32 @@
-from mrfit_app.servicos.pagamento_servico import criar_pagamento_transparente, consultar_status_pagamento
-from mrfit_app.modelos.pagamentos import db, Pagamento, LogPagamento
-import uuid
+from flask import request, jsonify
+import os
+import mercadopago
+from mrfit_app.servicos.mercado_pago_servico import criar_preferencia
 
-def processar_pagamento(dados):
-    """Processa o pagamento com os dados recebidos."""
+ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
-    uuid_requisicao = str(uuid.uuid4())
-    print(f"[DEBUG] UUID da requisição gerado: {uuid_requisicao}")
+def checkout():
+    # Recebe os dados enviados pelo front-end
+    payment_data = request.get_json()
+    transaction_amount = payment_data.get("transactionAmount")
+    description = payment_data.get("description")
+    payer_email = payment_data.get("payerEmail")
+    payer_name = payment_data.get("payerName")
+    payment_method = payment_data.get("paymentMethod")
 
-    valor = dados.get("valor")
-    token = dados.get("token")
-    metodo_pagamento = dados.get("metodo_pagamento", "").lower()
-    parcelamento = dados.get("parcelamento", 1)
-    issuer_id = dados.get("issuer_id", None)
-    payer = dados.get("payer", {})
-    email = payer.get("email")
-    nome = payer.get("nome")
-    sobrenome = payer.get("sobrenome")
-    identification = payer.get("identification", {})
-    tp_doc = identification.get("tp_doc")
-    nr_cpf = identification.get("nr_cpf")
+    # Cria preferência de pagamento usando o serviço
+    preference = criar_preferencia(ACCESS_TOKEN, transaction_amount, description, payer_email, payer_name)
 
-    if not all([email, valor, metodo_pagamento]):
-        _registrar_log(uuid_requisicao, None, "falha", "Campos obrigatórios ausentes")
-        return {"erro": "Nome, email, valor e método de pagamento são obrigatórios"}, 400
-
-    try:
-        valor = float(valor)
-        if valor <= 0:
-            raise ValueError
-    except (ValueError, TypeError):
-        _registrar_log(uuid_requisicao, None, "falha", "Valor inválido")
-        return {"erro": "Valor do pagamento inválido"}, 400
-
-    if metodo_pagamento != "pix" and not token:
-        _registrar_log(uuid_requisicao, None, "falha", "Token ausente em pagamento com cartão")
-        return {"erro": "Token do cartão é obrigatório para pagamentos com cartão"}, 400
-
-    resultado = criar_pagamento_transparente(
-        valor=valor,
-        email=email,
-        nome=nome,
-        sobrenome=sobrenome,
-        metodo_pagamento=metodo_pagamento,
-        parcelamento=parcelamento,
-        issuer_id = issuer_id,
-        token=token,
-        nr_cpf=nr_cpf,
-        tp_doc=tp_doc,
-        uuid_requisicao = uuid_requisicao
-    )
-
-    if isinstance(resultado, tuple):
-        _registrar_log(uuid_requisicao, None, "falha", str(resultado[0]))
-        return resultado
-
-    # Registro no banco
-    pagamento = Pagamento(
-        uuid_requisicao=uuid_requisicao,
-        email=email,
-        nome=nome,
-        payment_id=resultado.get("id"),
-        valor=valor,
-        metodo_pagamento=metodo_pagamento,
-        parcelamento=parcelamento,
-        issuer_id = issuer_id,
-        status=resultado.get("status")
-    )
-    db.session.add(pagamento)
-    db.session.commit()
-
-    _registrar_log(uuid_requisicao, pagamento.id, resultado.get("status"), str(resultado))
-
-    return {
-        "mensagem": "Pagamento registrado com sucesso",
-        "uuid_requisicao": uuid_requisicao,
-        "status": resultado.get("status"),
-        "payment_id": resultado.get("id"),
-        "qr_code": resultado.get("qr_code", None),
-        "ticket_url": resultado.get("ticket_url", None)
-    }
-
-def _registrar_log(uuid_requisicao, pagamento_id, status, detalhes):
-    log = LogPagamento(
-        uuid_requisicao=uuid_requisicao,
-        pagamento_id=pagamento_id,
-        status=status,
-        detalhes=detalhes
-    )
-    db.session.add(log)
-    db.session.commit()
+    # Retorna a resposta
+    if preference['status'] == 201:
+        init_point = preference['response']['init_point']
+        return jsonify({'status': 'success', 'init_point': init_point})
+    else:
+        return jsonify({
+            'status': 'error',
+            'message': 'Erro ao criar preferência de pagamento',
+            'error_detail': preference
+        })
 
 
 def processar_consulta(payment_id):

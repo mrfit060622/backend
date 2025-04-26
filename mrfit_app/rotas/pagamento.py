@@ -1,13 +1,11 @@
-from flask import Blueprint, request, jsonify
-from mrfit_app.controles.pagamento_controle import processar_pagamento, processar_consulta, consultar_status_pagamento
+from flask import Blueprint, request, jsonify, redirect
+import mercadopago
+from mrfit_app.controles.pagamento_controle import checkout
 
 pagamento_bp = Blueprint("pagamento", __name__)
 
-@pagamento_bp.route("/criar_pagamento", methods=["POST"])
-def criar_pagamento():
-    dados = request.json
-    resposta = processar_pagamento(dados)
-    return jsonify(resposta)
+# Definindo a rota com o método POST
+pagamento_bp.route('/checkout', methods=['POST'])(checkout)
 
 @pagamento_bp.route("/status_pagamento/<payment_id>", methods=["GET"])
 def status_pagamento(payment_id):

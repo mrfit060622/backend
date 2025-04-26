@@ -2,8 +2,7 @@ import os
 from mrfit_app.servicos.pdf_servico import gerar_pdf
 from mrfit_app.servicos.pdf_servico_pg import gerar_pdf_pg
 from mrfit_app.servicos.email_servico import enviar_email
-from mrfit_app.servicos.gera_codigo import gerar_codigo_unico  # Alterado para gerar código único
-from mrfit_app.servicos.pagamento_servico import verificar_pagamento
+from mrfit_app.servicos.gera_codigo import gerar_codigo_unico  
 from mrfit_app.servicos.registro_pedido_servico import registrar_pedido_relatorio
 from mrfit_app.servicos.extensoes import get_db
 from typing import Tuple
