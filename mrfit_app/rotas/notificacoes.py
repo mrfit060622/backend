@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from mrfit_app.controles.pagamento_controle import verificar_pagamento
+from mrfit_app.modelos.pagamento import Pagamento
 from mrfit_app import db
 
 bp_notificacoes = Blueprint("notificacoes", __name__)
@@ -12,35 +14,30 @@ def notificacao_mercado_pago():
         return jsonify({"erro": "Corpo da requisição vazio"}), 400
 
     tipo = dados.get("type")
-    payment_id = dados.get("data", {}).get("payment_id")
+    payment_id = dados.get("data", {}).get("id")  # ID enviado pela notificação
+    acao_recebida = dados.get("action")  # Exemplo: "payment.updated"
 
     # Validação do tipo e ID de pagamento
     if tipo != "payment" or not payment_id:
         return jsonify({"erro": "Notificação inválida"}), 400
 
     try:
-        # Consulta o pagamento atualizado no Mercado Pago
-        status_atual = consultar_status_pagamento(payment_id)
+        # Buscar pagamento pelo payment_id
+        pagamento = Pagamento.query.filter_by(payment_id=payment_id).first()
 
-        if not status_atual:
+        if not pagamento:
             return jsonify({"erro": "Pagamento não encontrado"}), 404
 
-        # Atualiza o status do pagamento no banco de dados
-        pagamento = Pagamento.query.filter_by(payment_id=payment_id).first()
-        if not pagamento:
-            return jsonify({"erro": "Pagamento não registrado localmente"}), 404
+        # Verificar o status real do pagamento via API (se necessário)
+        status_real = verificar_pagamento(payment_id)  # Função para buscar o status real
+        if status_real:
+            pagamento.status = status_real
+        else:
+            pagamento.status = "Desconhecido"  # Default caso não consiga buscar o status
 
-        pagamento.status = status_atual["status"]
         db.session.commit()
 
-        # Salva log de pagamento
-        salvar_log_pagamento(
-            pagamento_id=pagamento.id,
-            status=status_atual["status"],
-            detalhes=status_atual.get("status_detail", "")
-        )
-
-        return jsonify({"mensagem": "Notificação recebida e processada com sucesso"}), 200
+        return jsonify({"mensagem": "Pagamento atualizado com sucesso"}), 200
 
     except Exception as e:
         # Tratamento genérico de erros

@@ -52,3 +52,4 @@ def consulta_por_uuid(uuid_requisicao):
 
     except Exception as e:
         return jsonify({"erro": f"Erro ao consultar UUID: {str(e)}"}), 500
+

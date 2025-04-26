@@ -2,6 +2,11 @@ from flask import request, jsonify
 import os
 import mercadopago
 from mrfit_app.servicos.mercado_pago_servico import criar_preferencia
+from mrfit_app.modelos.pagamento import Pagamento
+from mrfit_app.modelos.relatorio import Relatorio
+from datetime import datetime
+from mrfit_app import db
+import requests
 
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
@@ -20,6 +25,29 @@ def checkout():
     # Retorna a resposta
     if preference['status'] == 201:
         init_point = preference['response']['init_point']
+        payment_id = preference['response']['id']  # ID único do pagamento
+
+        # Insere na tabela de pagamentos
+        novo_pagamento = Pagamento(
+            payment_id=payment_id,
+            valor=transaction_amount,
+            metodo_pagamento=payment_method,
+            status="Pendente",
+            data_pagamento=datetime.utcnow(),
+        )
+        db.session.add(novo_pagamento)
+        db.session.commit()
+
+        # Insere na tabela de relatórios
+        novo_relatorio = Relatorio(
+            pagamento_id=novo_pagamento.id,  # Referência ao pagamento
+            email=payer_email,
+            nome=payer_name,
+            data_solicitacao=datetime.utcnow(),
+        )
+        db.session.add(novo_relatorio)
+        db.session.commit()
+
         return jsonify({'status': 'success', 'init_point': init_point})
     else:
         return jsonify({
@@ -28,7 +56,6 @@ def checkout():
             'error_detail': preference
         })
 
-
 def processar_consulta(payment_id):
     """Consulta o status do pagamento na API externa."""
     if not payment_id:
@@ -36,23 +63,21 @@ def processar_consulta(payment_id):
 
     return verificar_pagamento(payment_id)
 
+def verificar_pagamento(payment_id):
+    ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
+    url = f"https://api.mercadopago.com/v1/payments/{payment_id}"
 
-def consultar_status_pagamento(payment_id):
-    """Consulta o status do pagamento e do último log no banco de dados."""
-    if not payment_id:
-        return None, "ID de pagamento obrigatório"
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}"
+    }
 
-    pagamento = Pagamento.query.filter_by(payment_id=payment_id).first()
-    if not pagamento:
-        return None, "Pagamento não encontrado"
-
-    log = LogPagamento.query.filter_by(pagamento_id=pagamento.id)\
-        .order_by(LogPagamento.criado_em.desc()).first()
-
-    if not log:
-        return None, "Log de pagamento não encontrado"
-
-    return {
-        "status": log.status,
-        "data_log": log.criado_em
-    }, None
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            dados = response.json()
+            return dados.get("status")  # Status: "approved", "pending", "rejected", etc.
+        else:
+            return None
+    except Exception as e:
+        print(f"Erro ao verificar pagamento: {str(e)}")
+        return None
