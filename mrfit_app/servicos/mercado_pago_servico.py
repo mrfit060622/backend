@@ -1,7 +1,13 @@
 import mercadopago
+import os
+from mrfit_app.modelos.pagamento import Pagamento
+from mrfit_app import db
+from datetime import datetime
+
+ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
 def criar_preferencia(access_token, transaction_amount, description, payer_email, payer_name):
-    sdk = mercadopago.SDK(access_token)
+    sdk = mercadopago.SDK(ACCESS_TOKEN)
     preference_data = {
         'items': [
             {
@@ -25,4 +31,21 @@ def criar_preferencia(access_token, transaction_amount, description, payer_email
         },
         'auto_return': 'approved',
     }
-    return sdk.preference().create(preference_data)
+    response = sdk.preference().create(preference_data)
+
+    if response['status'] == 201:
+        # Salvar no banco de dados
+        id_preferencia = response['response']['id']
+        external_reference = response['response'].get('external_reference')
+        init_point = response['response']['init_point']
+        
+        pagamento = Pagamento(
+            id_preferencia=id_preferencia,
+            status='Aguardando pagamento', 
+            data_pagamento=datetime.now()
+        )
+        db.session.add(pagamento)
+        db.session.commit()
+        
+        return response  # Retorna os dados para o controle e a rota
+    return response

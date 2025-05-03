@@ -1,7 +1,7 @@
 from mrfit_app.modelos.relatorio import Relatorio
 from sqlalchemy.orm import Session
-
-def registrar_pedido_relatorio(db: Session, data: dict, codigo_pdf: str, pagamento_id: str):
+from datetime import datetime
+def registrar_pedido_relatorio(db: Session, data: dict, id_preferencia: str, pagamento_id: str):
     try:
         relatorio = Relatorio(
             email=data.get('email'),
@@ -13,9 +13,9 @@ def registrar_pedido_relatorio(db: Session, data: dict, codigo_pdf: str, pagamen
             atividade=data.get('atividade'),
             objetivo=data.get('objetivo'),
             calorias=int(data.get('calorias')) if data.get('calorias') else None,
-            codigo_pdf=codigo_pdf,
+            data_pagamento=datetime.utcnow(),
             data_solicitacao=datetime.utcnow(),
-            pagamento_id=pagamento_id  # Referência ao pagamento
+            id_preferencia=id_preferencia  # Referência ao pagamento
         )
 
         db.add(relatorio)

@@ -6,7 +6,7 @@ from mrfit_app import db
 class Relatorio(db.Model):
     __tablename__ = "relatorios"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement = True)  # UUID
+    id_relatorio_pg = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, nullable=False)
     nome = db.Column(db.String)
     idade = db.Column(db.Integer)
@@ -16,6 +16,8 @@ class Relatorio(db.Model):
     atividade = db.Column(db.String)
     objetivo = db.Column(db.String)
     calorias = db.Column(db.Integer)
-    codigo_pdf = db.Column(db.String)  # Código do relatório em PDF
-    data_solicitacao = db.Column(db.DateTime, default=datetime.utcnow)  # Data da solicitação
-    pagamento_id = db.Column(db.Integer, db.ForeignKey('pagamentos.id'), nullable=False)  # Referência ao pagamento
+    data_solicitacao = db.Column(db.DateTime, default=datetime.utcnow)
+    data_pagamento = db.Column(db.DateTime, nullable=False)
+    id_preferencia = db.Column(db.String, db.ForeignKey('pagamentos.id_preferencia'), nullable=False)
+    pagamento = db.relationship('Pagamento', backref='relatorios', lazy=True)
+    
