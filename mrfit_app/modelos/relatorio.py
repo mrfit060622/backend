@@ -18,6 +18,6 @@ class Relatorio(db.Model):
     calorias = db.Column(db.Integer)
     data_solicitacao = db.Column(db.DateTime, default=datetime.utcnow)
     data_pagamento = db.Column(db.DateTime, nullable=False)
-    id_preferencia = db.Column(db.String, db.ForeignKey('pagamentos.id_preferencia'), nullable=False)
+    external_reference = db.Column(db.String, db.ForeignKey('pagamentos.external_reference'), nullable=False)
     pagamento = db.relationship('Pagamento', backref='relatorios', lazy=True)
     

@@ -13,27 +13,33 @@ ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
 def checkout():
     data = request.get_json()
-    transaction_amount = data.get("transactionAmount")
-    description = data.get("description")
-    payer_email = data.get("payerEmail")
-    payer_name = data.get("payerName")
-    payment_method = data.get("paymentMethod")
 
-    # Cria preferência no Mercado Pago
-    preference = criar_preferencia(
-        ACCESS_TOKEN,
-        transaction_amount,
-        description,
-        payer_email,
-        payer_name
-    )
+    try:
+        transaction_amount = data["transactionAmount"]
+        description = data["description"]
+        payer_email = data["payerEmail"]
+        payer_name = data["payerName"]
+        # pagamento_id será gerado após o pagamento, não agora
 
-    if preference['status'] == 201:
-        response = preference['response']
-        init_point = response.get('init_point')
-        id_preferencia = response.get('id')
+        # Criar preferência
+        resultado = criar_preferencia(
+            transaction_amount,
+            description,
+            payer_email,
+            payer_name
+        )
 
-        # Salva o relatório com base nos dados recebidos
+        if resultado["status"] != "success":
+            return jsonify({
+                "status": "error",
+                "message": resultado.get("message"),
+                "detail": resultado.get("error_detail")
+            }), 400
+
+        init_point = resultado.get("init_point")
+        external_reference = resultado.get("external_reference")
+
+        # Salvar relatório
         erro = registrar_pedido_relatorio(
             db.session,
             data={
@@ -47,28 +53,47 @@ def checkout():
                 'objetivo': data.get('objetivo'),
                 'calorias': data.get('calorias')
             },
-            id_preferencia=id_preferencia,
+            external_reference=external_reference,
             pagamento_id=None
         )
 
         if erro:
-            return jsonify({'status': 'error', 'message': 'Erro ao registrar relatório', 'detail': erro}), 500
+            return jsonify({
+                "status": "error",
+                "message": "Erro ao registrar relatório",
+                "detail": erro
+            }), 500
 
-        return jsonify({'status': 'success', 'init_point': init_point})
+        return jsonify({
+            "status": "success",
+            "init_point": init_point,
+            "external_reference": external_reference
+        }), 200
 
-    return jsonify({
-        'status': 'error',
-        'message': 'Erro ao criar preferência de pagamento',
-        'error_detail': preference
-    })
+    except KeyError as ke:
+        return jsonify({
+            "status": "error",
+            "message": f"Campo obrigatório ausente: {str(ke)}"
+        }), 400
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": "Erro inesperado ao processar o checkout",
+            "detail": str(e)
+        }), 500
 
 def consultar_status_pagamento(payment_id):
     """Consulta o status do pagamento na API externa."""
     if not payment_id:
         return {"erro": "ID de pagamento obrigatório"}, 400
 
-    return verificar_pagamento(payment_id)
+    pagamento_detalhes = verificar_pagamento(payment_id)
 
+    if pagamento_detalhes is None:
+        return {"erro": "Erro ao consultar status do pagamento"}, 500
+
+    return jsonify(pagamento_detalhes), 200
 
 def verificar_pagamento(payment_id):
     url = f"https://api.mercadopago.com/v1/payments/{payment_id}"
@@ -80,9 +105,7 @@ def verificar_pagamento(payment_id):
         response = requests.get(url, headers=headers)
         
         if response.status_code == 200:
-            pagamento_detalhes = response.json()
-            return pagamento_detalhes  # <- Retornar o JSON para usar na outra função
-            pagamento_detalhes
+            return response.json()  # Retorna o JSON com os detalhes do pagamento
         else:
             print(f"Erro na consulta: Status {response.status_code} - {response.text}")
             return None
@@ -90,4 +113,3 @@ def verificar_pagamento(payment_id):
     except Exception as e:
         print(f"Erro ao verificar pagamento: {str(e)}")
         return None
-

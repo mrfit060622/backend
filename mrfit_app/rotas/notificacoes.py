@@ -5,7 +5,6 @@ from datetime import datetime
 from mrfit_app import db
 
 bp_notificacoes = Blueprint("notificacoes", __name__)
-
 @bp_notificacoes.route("/mercado-pago", methods=["POST"])
 def notificacao_mercado_pago():
     dados = request.get_json()
@@ -17,33 +16,52 @@ def notificacao_mercado_pago():
     payment_id = dados.get("data", {}).get("id")
     action = dados.get("action")
 
-    print(f"Tipo: {tipo}, Payment ID: {payment_id}, Action: {action}")
+    print(f"[Webhook] Tipo: {tipo}, Payment ID: {payment_id}, Action: {action}")
 
     if tipo != "payment" or not payment_id:
         return jsonify({"erro": "Notificação inválida"}), 400
 
     try:
-        # Primeiro: verifica se já existe no banco
-        pagamento = Pagamento.query.filter_by(payment_id=payment_id).first()
+        # Consulta o Mercado Pago com o ID do pagamento
+        dados_pagamento = verificar_pagamento(payment_id)
+
+        if not dados_pagamento:
+            print("[Webhook] Pagamento não encontrado na API do MP")
+            return jsonify({"erro": "Pagamento não encontrado"}), 404
+
+        external_reference = dados_pagamento.get("external_reference")
+
+        if not external_reference:
+            print("[Webhook] external_reference ausente")
+            return jsonify({"erro": "external_reference ausente"}), 400
+
+        # Agora busca o pagamento pela referência externa
+        print (f"[Webhook] Buscando pagamento com external_reference={external_reference}")
+        pagamento = Pagamento.query.filter_by(external_reference=external_reference).first()
 
         if not pagamento:
-            # Cria um novo objeto Pagamento com status inicial
-            pagamento = Pagamento(payment_id=payment_id, status=action)
-            db.session.add(pagamento)
-            db.session.commit()  # <- IMPORTANTE: garantir que o registro existe no banco
+            print(f"[Webhook] Nenhum pagamento encontrado para external_reference={external_reference}")
+            return jsonify({"erro": "Pagamento não encontrado no banco"}), 404
 
-        else:
-            # Atualiza o status se já existe
-            pagamento.status = action
-            db.session.commit()
+        # Atualiza o registro existente
+        pagamento.payment_id = payment_id
+        pagamento.email_pago = dados_pagamento.get("payer", {}).get("email")
+        pagamento.metodo_pagamento = dados_pagamento.get("payment_method_id")
+        pagamento.valor = dados_pagamento.get("transaction_amount")
+        pagamento.parcelamento = dados_pagamento.get("installments")
+        pagamento.status = dados_pagamento.get("status")
+        pagamento.data_pagamento = datetime.utcnow()
+        pagamento.tipo = tipo
 
-        # Agora o pagamento existe -> podemos completar os dados
-        completa_pagamento(payment_id, tipo)
+        db.session.commit()
 
-        return jsonify({"mensagem": "Notificação processada e pagamento atualizado"}), 200
+        print(f"[Webhook] Pagamento atualizado com sucesso para external_reference={external_reference}")
+        return jsonify({"mensagem": "Notificação processada com sucesso"}), 200
 
     except Exception as e:
-        return jsonify({"erro": f"Erro ao processar notificação: {str(e)}"}), 500
+        print(f"[Webhook] Erro inesperado: {str(e)}")
+        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
+
 
 
 def completa_pagamento(payment_id, tipo):

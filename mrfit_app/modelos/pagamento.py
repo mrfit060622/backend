@@ -10,7 +10,7 @@ class Pagamento(db.Model):
     status = db.Column(db.String, nullable=True)
     tipo = db.Column(db.String, nullable=True)
     payment_id = db.Column(db.BigInteger, nullable=True, unique=True)
-    id_preferencia = db.Column(db.String, nullable=False, unique=True)
+    external_reference = db.Column(db.String, nullable=False, unique=True)
     valor = db.Column(db.Float, nullable=True)
     data_pagamento = db.Column(db.DateTime, default=datetime.utcnow)
     metodo_pagamento = db.Column(db.String, nullable=True)
