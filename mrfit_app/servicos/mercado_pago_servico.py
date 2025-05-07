@@ -51,7 +51,8 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
             pagamento = Pagamento(
                 external_reference=external_reference,
                 status='Aguardando pagamento',
-                data_pagamento=datetime.utcnow()
+                data_pagamento=datetime.utcnow(),
+                email_pago=payer_email
             )
             db.session.add(pagamento)
             db.session.commit()
