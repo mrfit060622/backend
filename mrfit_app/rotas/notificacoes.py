@@ -45,7 +45,6 @@ def notificacao_mercado_pago():
 
         # Atualiza o registro existente
         pagamento.payment_id = payment_id
-        pagamento.email_pago = dados_pagamento.get("payer", {}).get("email")
         pagamento.metodo_pagamento = dados_pagamento.get("payment_method_id")
         pagamento.valor = dados_pagamento.get("transaction_amount")
         pagamento.parcelamento = dados_pagamento.get("installments")
