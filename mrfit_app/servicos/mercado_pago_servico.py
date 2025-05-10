@@ -5,7 +5,6 @@ from mrfit_app import db
 from datetime import datetime
 import uuid
 
-
 ACCESS_TOKEN = os.getenv("MERCADO_PAGO_ACCESS_TOKEN")
 
 def criar_preferencia(transaction_amount, description, payer_email, payer_name):
@@ -28,13 +27,13 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'name': payer_name,
             },
             'payment_methods': {
-                'excluded_payment_types': [{'id': 'atm'}],
+                'excluded_payment_types': [{'id': 'atm'}],  # Exclui boleto bancário
                 'installments': 1,
             },
             'back_urls': {
-                'success': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
-                'failure': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
-                'pending': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
+                'success': f'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
+                'failure': f'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
+                'pending': f'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
             },
             'auto_return': 'approved',
             'external_reference': external_reference
