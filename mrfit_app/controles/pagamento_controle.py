@@ -113,3 +113,5 @@ def verificar_pagamento(payment_id):
     except Exception as e:
         print(f"Erro ao verificar pagamento: {str(e)}")
         return None
+
+   

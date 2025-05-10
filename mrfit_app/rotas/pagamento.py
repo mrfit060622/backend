@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, redirect
-from mrfit_app.controles.pagamento_controle import checkout
-from mrfit_app.controles.pagamento_controle import consultar_status_pagamento
+from mrfit_app.controles.pagamento_controle import checkout,consultar_status_pagamento
+from mrfit_app.modelos.pagamento import Pagamento
+from mrfit_app import db
 
 pagamento_bp = Blueprint("pagamento", __name__)
 
@@ -21,37 +22,17 @@ def status_pagamento(payment_id):
 
 
 
-@pagamento_bp.route("/consulta_uuid/<uuid_requisicao>", methods=["GET"])
-def consulta_por_uuid(uuid_requisicao):
-    """Consulta pagamento e logs a partir do UUID de requisição."""
+@pagamento_bp.route("/consulta_status_interno/<external_reference>", methods=["GET"])
+def consulta_status_pagamento_interno(external_reference):
+    """Consulta pagamento a partir do externa_reference."""
+    print (f"📌 External Reference: {external_reference}")
     try:
-        pagamento = Pagamento.query.filter_by(uuid_requisicao=uuid_requisicao).first()
+        pagamento = Pagamento.query.filter_by(external_reference=external_reference).first()
 
         if not pagamento:
-            return jsonify({"erro": "Pagamento com esse UUID não encontrado"}), 404
+            return jsonify({"erro": "Pagamento não identificado"}), 404
 
-        logs = LogPagamento.query.filter_by(uuid_requisicao=uuid_requisicao).all()
-
-        return jsonify({
-            "pagamento": {
-                "id": pagamento.id,
-                "email": pagamento.email,
-                "nome": pagamento.nome,
-                "payment_id": pagamento.payment_id,
-                "valor": float(pagamento.valor),
-                "metodo_pagamento": pagamento.metodo_pagamento,
-                "parcelamento": pagamento.parcelamento,
-                "status": pagamento.status,
-                "criado_em": pagamento.criado_em.isoformat(),
-            },
-            "logs": [
-                {
-                    "status": log.status,
-                    "detalhes": log.detalhes,
-                    "criado_em": log.criado_em.isoformat()
-                } for log in logs
-            ]
-        }), 200
+        return jsonify({"status": pagamento.status}), 200
 
     except Exception as e:
         return jsonify({"erro": f"Erro ao consultar UUID: {str(e)}"}), 500
