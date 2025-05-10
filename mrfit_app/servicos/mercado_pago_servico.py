@@ -32,7 +32,7 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'installments': 1,
             },
             'back_urls': {
-                'success': 'https://seusite.com/pagamento/sucesso',
+                'success': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
                 'failure': 'https://seusite.com/pagamento/erro',
                 'pending': 'https://seusite.com/pagamento/pendente',
             },

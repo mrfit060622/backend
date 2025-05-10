@@ -3,8 +3,7 @@ import logging
 from flask import Blueprint, jsonify, request, send_from_directory,current_app
 from flask_mail import Mail
 from mrfit_app.controles.pdf_controle import processar_pedido_pdf, processar_pedido_pdf_pg
-from mrfit_app.servicos.email_servico import enviar_email
-from mrfit_app.servicos.gera_codigo import gerar_codigo_unico  # Alterado para gerar código único
+from mrfit_app.modelos.relatorio import Relatorio
 
 # Criar Blueprint
 pdf_bp = Blueprint("pdf", __name__)
@@ -48,6 +47,24 @@ def gerar_pdf():
         logging.error(f"Erro ao processar requisição: {e}")
         return jsonify({"error": "Erro interno no servidor."}), 500
 
+@pdf_bp.route('/consulta_pdf/<external_reference>', methods=['GET'])
+def buscar_relatorio_por_referencia(external_reference):
+    relatorio = Relatorio.query.filter_by(external_reference=external_reference).first()
+
+    if not relatorio:
+        return jsonify({'erro': 'Relatório não encontrado'}), 404
+
+    return jsonify({
+        'nome': relatorio.nome,
+        'idade': relatorio.idade,
+        'peso': relatorio.peso,
+        'altura': relatorio.altura,
+        'sexo': relatorio.sexo,
+        'atividade': relatorio.atividade,
+        'objetivo': relatorio.objetivo,
+        'calorias': relatorio.calorias
+    })
+
 @pdf_bp.route("/gerar_pdf_pg", methods=["POST"])
 def gerar_pdf_pg():
     """ Rota para gerar um PDF e enviar por e-mail. """
@@ -76,6 +93,7 @@ def gerar_pdf_pg():
     except Exception as e:
         logging.error(f"Erro ao processar requisição: {e}")
         return jsonify({"error": "Erro interno no servidor."}), 500
+
 
 @pdf_bp.route('/download/<codigo>', methods=['GET'])
 def download_pdf(codigo):
