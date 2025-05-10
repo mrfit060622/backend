@@ -27,7 +27,6 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'name': payer_name,
             },
             'payment_methods': {
-                'excluded_payment_types': [{'id': 'atm'}],  # Exclui boleto bancário
                 'installments': 1,
             },
             'back_urls': {
