@@ -33,8 +33,8 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
             },
             'back_urls': {
                 'success': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
-                'failure': 'https://seusite.com/pagamento/erro',
-                'pending': 'https://seusite.com/pagamento/pendente',
+                'failure': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
+                'pending': 'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
             },
             'auto_return': 'approved',
             'external_reference': external_reference
