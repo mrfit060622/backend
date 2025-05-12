@@ -27,7 +27,7 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'name': payer_name,
             },
             'payment_methods': {
-                'default_payment_method_types': [{'id': 'pix'}],
+                'excluded_payment_types': [{'id': 'pix'}],
                 'installments': 1
             },
             'back_urls': {
