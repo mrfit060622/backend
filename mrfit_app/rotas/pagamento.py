@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify, redirect
 from mrfit_app.controles.pagamento_controle import checkout,consultar_status_pagamento
 from mrfit_app.modelos.pagamento import Pagamento
-from mrfit_app import db
 
 pagamento_bp = Blueprint("pagamento", __name__)
 

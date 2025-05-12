@@ -27,6 +27,7 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'name': payer_name,
             },
             'payment_methods': {
+                'default_payment_method_id': None,
                 'installments': 1,
             },
             'back_urls': {
@@ -55,12 +56,14 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
             db.session.add(pagamento)
             db.session.commit()
             print("💾 Pagamento salvo com sucesso.")
-
+            print ("🔑 ID da preferência:", response_data.get ("id"))
             return {
                 "status": "success",
+                "preference_id": response_data.get("id"),
                 "init_point": init_point,
                 "external_reference": external_reference
             }
+           
 
         else:
             return {

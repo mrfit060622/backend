@@ -67,7 +67,8 @@ def checkout():
         return jsonify({
             "status": "success",
             "init_point": init_point,
-            "external_reference": external_reference
+            "external_reference": external_reference,
+            "preference_id": resultado.get("preference_id")
         }), 200
 
     except KeyError as ke:
