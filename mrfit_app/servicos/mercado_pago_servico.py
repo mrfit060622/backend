@@ -36,7 +36,8 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'pending': f'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
             },
             'auto_return': 'approved',
-            'external_reference': external_reference
+            'external_reference': external_reference,
+            'default_payment_method_id': None
         }
 
         print("📤 Enviando dados para Mercado Pago...")
