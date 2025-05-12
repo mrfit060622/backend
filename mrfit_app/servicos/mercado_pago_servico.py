@@ -27,8 +27,8 @@ def criar_preferencia(transaction_amount, description, payer_email, payer_name):
                 'name': payer_name,
             },
             'payment_methods': {
-                'default_payment_method_id': None,
-                'installments': 1,
+                'default_payment_method_types': [{'id': 'pix'}],
+                'installments': 1
             },
             'back_urls': {
                 'success': f'https://front-mu-one.vercel.app/detalhes?ref={external_reference}',
