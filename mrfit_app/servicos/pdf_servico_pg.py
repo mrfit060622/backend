@@ -3,10 +3,8 @@ import logging
 import uuid
 from flask import render_template
 from weasyprint import HTML
-from werkzeug.utils import secure_filename
 from mrfit_app.servicos.plano_alimentar_servico import validar_dados_essenciais, ajustar_calorias
 from mrfit_app.modelos.plano_alimentar import gerar_plano_alimentar
-from mrfit_app.servicos.gera_codigo import gerar_codigo_unico
 from typing import Dict, Tuple
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "pdfs")
