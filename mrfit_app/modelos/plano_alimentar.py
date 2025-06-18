@@ -1,36 +1,105 @@
-from typing import List, Dict, Tuple
-import random
+import os
+import json
+import re
+from typing import Dict, Any, List
+# from mrfit_app.modelos.grafico_alimentos import gerar_grafico_macros
 
-def gerar_plano_alimentar(calorias: int) -> Tuple[List[Dict[str, str]], int]:
-    """Gera um plano alimentar detalhado com diferentes unidades de medida."""
-    alimentos = {
-        "Café da Manhã": [
-            ("2 ovos mexidos (100g) + 1 fatia de pão integral (30g) + 1 banana média (120g)", 400),
-            ("Iogurte natural (200ml) + granola (30g) + 1 colher de mel (10g)", 350),
-            ("Vitamina de aveia (250ml de leite, 40g de aveia, 1 banana)", 450)
-        ],
-        "Almoço": [
-            ("150g de frango grelhado + 100g de arroz integral + 80g de salada variada", 600),
-            ("200g de peixe assado + 150g de batata-doce + 100g de legumes cozidos", 550),
-            ("120g de carne magra + 1 concha de feijão (100g) + 100g de arroz + 50g de verduras", 650)
-        ],
-        "Jantar": [
-            ("Omelete (2 ovos) com 30g de queijo branco + 100g de legumes cozidos", 500),
-            ("Salada de atum (100g) + 50g de quinoa + 1 tomate picado + 1 colher de azeite (10ml)", 450),
-            ("Sopa de legumes (250ml) com 100g de frango desfiado", 400)
-        ],
-        "Lanche": [
-            ("Iogurte natural (200ml) + 15g de castanhas", 300),
-            ("Barra de proteína (40g) + 200ml de suco natural", 250),
-            ("2 torradas integrais (30g) + 20g de pasta de amendoim", 350)
-        ]
+def carregar_planos(objetivo) -> Dict[str, Any]:
+    if objetivo == 1:
+        nome_arquivo = "planos_alimentares.json"
+    else:
+        nome_arquivo = "planos_alimentares2.json"
+    
+    diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+    caminho_json = os.path.abspath(os.path.join(diretorio_atual, "..", "templates", nome_arquivo))
+    
+    with open(caminho_json, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def selecionar_faixa(calorias: int, faixas: list[int]) -> int:
+    faixas_ordenadas = sorted(faixas)
+    selecionada = faixas_ordenadas[0]
+    for faixa in faixas_ordenadas:
+        if calorias >= faixa:
+            selecionada = faixa
+        else:
+            break
+    return selecionada
+
+
+def separar_alimentos(descricao: str) -> List[Dict[str, str]]:
+    """
+    Converte string do tipo:
+    "Leite desnatado: 1 copo (200 ml) — Grupo F"
+    em:
+    {
+        "nome": "Leite desnatado",
+        "quantidade": "1 copo (200 ml)",
+        "grupo": "Grupo F"
+    }
+    """
+    itens = [item.strip() for item in re.split(r',(?![^()]*\))', descricao)]
+    resultado = []
+
+    for item in itens:
+        partes = item.split("—")
+        if len(partes) == 2:
+            alimento_qtd, grupo = partes
+            if ":" in alimento_qtd:
+                nome, qtd = map(str.strip, alimento_qtd.split(":", 1))
+            else:
+                nome, qtd = alimento_qtd.strip(), ""
+            resultado.append({
+                "nome": nome,
+                "quantidade": qtd,
+                "grupo": grupo.strip()
+            })
+        else:
+            resultado.append({
+                "nome": item.strip(),
+                "quantidade": "",
+                "grupo": ""
+            })
+
+    return resultado
+
+
+def gerar_plano_alimentar(calorias: int, objetivo=1) -> tuple[List[Dict[str, Any]], int]:
+    dados_planos = carregar_planos(objetivo)
+    faixas = list(map(int, dados_planos.keys()))
+    faixa_escolhida = selecionar_faixa(calorias, faixas)
+    plano_raw = dados_planos[str(faixa_escolhida)]
+
+    nomes_refeicoes = {
+        "cafe_da_manha": "☀️ Café da Manhã",
+        "lanche_da_manha": "🍎 Lanche da Manhã",
+        "almoco_jantar": "🍛 Almoço / Jantar",
+        "lanche_da_tarde": "☕ Lanche da Tarde",
+        "ceia": "🌙 Ceia",
     }
 
-    plano = []
-    calorias_totais = 0
-    for refeicao, opcoes in alimentos.items():
-        escolha = random.choice(opcoes)
-        plano.append({"nome": refeicao, "descricao": escolha[0], "calorias": escolha[1]})
-        calorias_totais += escolha[1]
+    refeicoes_formatadas = []
 
-    return plano, calorias_totais
+    for chave, itens in plano_raw.items():
+        nome_legivel = nomes_refeicoes.get(chave, chave.replace("_", " ").title())
+        descricao = ", ".join(itens)
+        alimentos = separar_alimentos(descricao)
+
+        refeicoes_formatadas.append({
+            "nome": nome_legivel,
+            "alimentos": alimentos  # Agora lista de dicionários
+        })
+
+    return refeicoes_formatadas, faixa_escolhida
+
+
+
+if __name__ == "__main__":
+    # nome_arquivo = "planos_alimentares.json"
+    # dados = carregar_planos(nome_arquivo)
+    calorias_entrada = 1500
+    plano = gerar_plano_alimentar(calorias_entrada,1)
+    
+    from pprint import pprint
+    pprint(plano)

@@ -1,17 +1,31 @@
+# servicos/plano_alimentar_servico.py
 from typing import List, Dict
+# from mrfit_app.modelos.plano_alimentarcopy import gerar_plano_alimentar
+
 
 def validar_dados_essenciais(data: Dict[str, str]) -> List[str]:
-    """Valida se todos os campos obrigatórios estão presentes nos dados do usuário."""
+    """Valida os campos obrigatórios do formulário."""
     required_fields = ['nome', 'idade', 'peso', 'altura', 'sexo', 'atividade', 'objetivo', 'calorias', 'email']
-    return [field for field in required_fields if not data.get(field)]
+    return [campo for campo in required_fields if not data.get(campo)]
 
-def ajustar_calorias(plano_alimentar: List[Dict[str, str]], calorias_sugeridas: int) -> List[Dict[str, str]]:
-    """Ajusta as quantidades dos alimentos para que a soma das calorias atinja a meta sugerida."""
-    total_calorias = sum(item['calorias'] for item in plano_alimentar)
+def ajustar_calorias(plano: List[Dict[str, str]], calorias_sugeridas: int) -> List[Dict[str, str]]:
+    """Ajusta as calorias do plano conforme a meta calórica."""
+    total = sum(item['calorias'] for item in plano)
+    if total == 0:
+        return plano
 
-    if total_calorias > 0:  # Evitar divisão por zero
-        fator_ajuste = calorias_sugeridas / total_calorias
-        for item in plano_alimentar:
-            item['calorias'] = int(item['calorias'] * fator_ajuste)
+    fator = calorias_sugeridas / total
+    for item in plano:
+        item['calorias'] = int(item['calorias'] * fator)
 
-    return plano_alimentar
+    return plano
+
+
+# if __name__ == "__main__":
+#     # nome_arquivo = "planos_alimentares.json"
+#     # dados = carregar_planos(nome_arquivo)
+#     calorias = 25000
+#     plano1,calorias = gerar_plano_alimentar(calorias)
+#     result = ajustar_calorias(plano1,calorias)
+#     from pprint import pprint
+#     pprint(result)

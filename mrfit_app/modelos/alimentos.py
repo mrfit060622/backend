@@ -1,16 +1,16 @@
 from mrfit_app import db
 
-class TipoAlimento(db.Model):
-    __tablename__ = "tipos_alimento"  # Nome da tabela corrigido
+class GrupoAlimento(db.Model):
+    __tablename__ = "alimentos_grupos"  # Nome da tabela corrigido
 
-    id_tp_alimento = db.Column(db.Integer, primary_key=True)  # ID do tipo de alimento
-    tp_alimento = db.Column(db.String(100), nullable=False, unique=True)  # Nome do tipo (Ex: Proteínas, Carboidratos)
+    id_grp_alimento = db.Column(db.Integer, primary_key=True)  # ID do grupo de alimento
+    nm_grp_alimento = db.Column(db.String(100), nullable=False, unique=True)  # Nome do grupo de alimento (Ex: Proteínas, Carboidratos)
 
     # Relacionamento com Alimento
     alimentos = db.relationship("Alimento", back_populates="tipo_alimento", lazy=True)
 
     def __repr__(self):
-        return f"<TipoAlimento {self.tp_alimento}>"
+        return f"<GrupoAlimento {self.nm_grp_alimento}>"
 
 
 class Alimento(db.Model):
@@ -31,11 +31,11 @@ class Alimento(db.Model):
     potassio_mg = db.Column(db.Float, nullable=True)
     vitamina_c_mg = db.Column(db.Float, nullable=True)
 
-    # Chave estrangeira para TipoAlimento
-    tipo_alimento_id = db.Column(db.Integer, db.ForeignKey("tipos_alimento.id_tp_alimento"), nullable=False)
+    # Chave estrangeira para GrupoAlimento
+    tipo_alimento_id = db.Column(db.Integer, db.ForeignKey("alimentos_grupos.id_grp_alimento"), nullable=False)
 
-    # Relacionamento com TipoAlimento
-    tipo_alimento = db.relationship("TipoAlimento", back_populates="alimentos")
+    # Relacionamento com GrupoAlimento
+    tipo_alimento = db.relationship("GrupoAlimento", back_populates="alimentos")
 
     def __repr__(self):
         return f"<Alimento {self.descricao}>"

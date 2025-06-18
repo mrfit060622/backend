@@ -23,15 +23,10 @@ def gerar_pdf_pg(data: Dict[str, str]) -> Tuple[str, str]:
     missing_fields = validar_dados_essenciais(data)
     if missing_fields:
         return None, f"Campos obrigatórios ausentes: {', '.join(missing_fields)}"
-    
 
     plano_alimentar, calorias_totais = gerar_plano_alimentar(data['calorias'])
-    data['refeicoes'] = plano_alimentar
+    data['refeicoes'] = ajustar_calorias(plano_alimentar, data['calorias'])
     data['calorias_totais'] = calorias_totais
-    print (data['refeicoes'], calorias_totais)
-    # print (data['calorias'])
-    # data['refeicoes'] = ajustar_calorias(plano_alimentar, data(str['calorias']))
-    # data['calorias_totais'] = calorias_totais
 
     html = render_template('pdf_template_pg.html', **data)
 
