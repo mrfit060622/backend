@@ -5,7 +5,8 @@ from mrfit_app.modelos.atividade import Atividade
 from mrfit_app.modelos.pagamento import Pagamento
 from mrfit_app.modelos.relatorio import Relatorio
 from mrfit_app.modelos.relatorio_gratis import RelatorioGratuito
-# from mrfit_app.modelos.alimentos import TipoAlimento, Alimento
+from mrfit_app.modelos.alimentos import GrupoAlimento, Alimento, MedidasPorcao, AlimentoMedida
+from mrfit_app.modelos.plano_refeicoes import PlanoRefeicaoAlimento, PlanoCalorico, Refeicao
 
 """from mrfit_app.modelos. import TipoAlimento, Alimento"""
 
