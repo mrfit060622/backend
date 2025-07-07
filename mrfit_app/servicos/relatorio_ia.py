@@ -71,7 +71,7 @@ def preparar_dados(dados_usuario,json_data):
                 "nome": alimento["alimento"],
                 "quantidade": alimento["quantidade"],
                 "kcal": alimento["calorias"],
-                "justificativa": f"Este alimento fornece {alimento["calorias"]} kcal",
+                "justificativa": f"Este alimento fornece {alimento['calorias']} kcal",
                 "substituicoes": substituicoes
             })
 
