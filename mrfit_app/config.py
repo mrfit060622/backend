@@ -28,12 +28,15 @@ class Config:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
 
+
     # Verificação das configurações de e-mail
     if not all([MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_DEFAULT_SENDER]):
         raise ValueError("⚠️ ERRO: Variáveis de ambiente para configuração de e-mail não foram carregadas corretamente.")
     
     # Configuração de API
     API_HOST = os.getenv('API_HOST', 'https://api.exemplo.com')
+    
+    CHAVE_IA = os.getenv('CHAVE_IA')
     
     # Configuração do banco de dados
     DB_HOST = os.getenv('DB_HOST_DEV', 'localhost')

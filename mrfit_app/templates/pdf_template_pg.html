@@ -1,346 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Relatório Nutricional Personalizado</title>
-    <style>
-      body {
-        font-family: 'Arial', sans-serif;
-        margin: 20px;
-        background-color: #f5f5f5;
-        color: #333;
-        line-height: 1.5;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Relatório Nutricional Personalizado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    h1, h2, h3 {
+      color: #27ae60;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background: #2ecc71;
+      color: white;
+    }
+    .macros-bar {
+      display: flex;
+      margin: 10px 0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .macro-carb { background: #f1c40f; color: #fff; text-align: center; padding: 5px; }
+    .macro-protein { background: #3498db; color: #fff; text-align: center; padding: 5px; }
+    .macro-fat { background: #e67e22; color: #fff; text-align: center; padding: 5px; }
+    .section { margin-bottom: 30px; }
+    .disclaimer {
+      font-size: 0.9em;
+      color: #555;
+      text-align: center;
+      font-weight: bold;
+    }
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+  </style>
+</head>
+<body>
+  <h1>Relatório Nutricional Personalizado</h1>
+  <p><strong>Nome:</strong> {{ nome }} | <strong>Data:</strong> {{ data }}</p>
 
-      h1 {
-        text-align: center;
-        color: #2c3e50;
-        font-size: 2.5em;
-        margin-bottom: 0.2em;
-      }
+  <div class="section">
+    <h2>Resumo</h2>
+    <p>Você deve consumir aproximadamente <strong>{{ calorias }} kcal</strong> diariamente para alcançar seu objetivo de <strong>{{ objetivo }}</strong>.</p>
+  </div>
 
-      h2 {
-        color: #27ae60;
-        border-bottom: 2px solid #27ae60;
-        padding-bottom: 5px;
-        font-size: 1.6em;
-        margin-top: 40px;
-      }
+  <div class="section">
+    <h2>Informações do Usuário</h2>
+    <table>
+      <tr><th>Campo</th><th>Valor</th></tr>
+      <tr><td>Idade</td><td>{{ idade }} anos</td></tr>
+      <tr><td>Peso</td><td>{{ peso }} kg</td></tr>
+      <tr><td>Altura</td><td>{{ altura }} m</td></tr>
+      <tr><td>Sexo</td><td>{{ sexo }}</td></tr>
+      <tr><td>Nível de Atividade</td><td>{{ atividade }}</td></tr>
+      <tr><td>Objetivo</td><td>{{ objetivo }}</td></tr>
+    </table>
+  </div>
 
-      h3 {
-        color: #2c3e50;
-        margin-top: 30px;
-        font-size: 1.3em;
-      }
-
-      p {
-        margin: 10px 0;
-        font-size: 1.1em;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 30px;
-        background-color: #fff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-      }
-
-      th {
-        background-color: #2ecc71;
-        color: #fff;
-        font-size: 1em;
-      }
-
-      ul {
-        list-style-type: none;
-        padding-left: 0;
-        margin: 30px 0;
-      }
-
-      li {
-        background: #ffffff;
-        margin-bottom: 20px;
-        padding: 15px;
-        border-left: 8px solid #2ecc71;
-        border-radius: 5px;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
-        font-size: 1.05em;
-      }
-
-      .footer {
-        text-align: center;
-        margin-top: 40px;
-        font-size: 0.9em;
-        color: #777;
-      }
-
-      .disclaimer {
-        margin-top: 20px;
-        font-size: 0.85em;
-        color: #555;
-        font-weight: bold;
-        text-align: center;
-      }
-
-      .highlight {
-        color: #27ae60;
-        font-weight: bold;
-      }
-
-      .cta-button {
-        background-color: #27ae60;
-        color: #fff;
-        padding: 15px 25px;
-        text-decoration: none;
-        font-weight: bold;
-        border-radius: 5px;
-        display: inline-block;
-        font-size: 1.2em;
-        margin-top: 20px;
-        transition: background-color 0.3s ease;
-      }
-
-      .cta-button:hover,
-      .cta-button:focus {
-        background-color: #219150;
-        outline: none;
-      }
-
-      .icon {
-        margin-right: 8px;
-      }
-
-      .page-break {
-        page-break-before: always;
-        break-before: page;
-      }
-
-      /* Macronutrient bars container */
-      .macros-bar {
-        height: 24px;
-        background-color: #eee;
-        border-radius: 12px;
-        overflow: hidden;
-        margin: 10px 0;
-        width: 100%;
-      }
-
-      .macro-carb {
-        background-color: #f1c40f;
-        width: 45%;
-        height: 100%;
-        text-align: center;
-        color: #fff;
-        line-height: 24px;
-        font-weight: 600;
-        user-select: none;
-      }
-
-      .macro-protein {
-        background-color: #3498db;
-        width: 35%;
-        height: 100%;
-        text-align: center;
-        color: #fff;
-        line-height: 24px;
-        font-weight: 600;
-        user-select: none;
-      }
-
-      .macro-fat {
-        background-color: #e67e22;
-        width: 20%;
-        height: 100%;
-        text-align: center;
-        color: #fff;
-        line-height: 24px;
-        font-weight: 600;
-        user-select: none;
-      }
-
-      /* Responsive improvements */
-      @media (max-width: 600px) {
-        body {
-          margin: 10px;
-        }
-
-        table,
-        th,
-        td {
-          font-size: 0.9em;
-        }
-
-        h1 {
-          font-size: 2em;
-        }
-
-        h2 {
-          font-size: 1.3em;
-          margin-top: 30px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Relatório Nutricional Personalizado</h1>
-
-    <section aria-label="Saudação do usuário">
-      <h2>Olá, {{ nome }}!</h2>
-      <p>
-        <strong>Data de Geração:</strong> {{ data }}
-      </p>
-    </section>
-
-    <section aria-label="Resumo do relatório">
-      <h2>Resumo do Relatório</h2>
-      <p>
-        Você deve consumir aproximadamente <strong>{{ calorias }} kcal</strong> diariamente para alcançar seu objetivo de <strong>{{ objetivo }}</strong>.
-      </p>
-    </section>
-
-    <section aria-label="Informações básicas do usuário">
-      <h2>Informações Básicas do Usuário</h2>
-      <table role="table">
-        <thead>
-          <tr>
-            <th scope="col">Campo</th>
-            <th scope="col">Valor</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Idade</td>
-            <td>{{ idade }} anos</td>
-          </tr>
-          <tr>
-            <td>Peso</td>
-            <td>{{ peso }} kg</td>
-          </tr>
-          <tr>
-            <td>Altura</td>
-            <td>{{ altura }} cm</td>
-          </tr>
-          <tr>
-            <td>Sexo</td>
-            <td>{{ sexo }}</td>
-          </tr>
-          <tr>
-            <td>Nível de Atividade Física</td>
-            <td>{{ atividade }}</td>
-          </tr>
-          <tr>
-            <td>Objetivo</td>
-            <td>{{ objetivo }}</td>
-          </tr>
-          <tr>
-            <td>Cálorias Diárias</td>
-            <td>{{ calorias }} kcal</td>
-          </tr>
-        </tbody>
+  <div class="section">
+    <h2>Plano Alimentar</h2>
+    {% for refeicao in refeicoes %}
+      <h3>{{ refeicao.nome }}</h3>
+      <table>
+        <tr>
+          <th>Alimento</th>
+          <th>Quantidade</th>
+          <th>Justificativa</th>
+        </tr>
+        {% for item in refeicao.alimentos %}
+        <tr>
+          <td>{{ item.nome }}</td>
+          <td>{{ item.quantidade }}</td>
+          <td>{{ item.justificativa }}</td>
+        </tr>
+        {% endfor %}
       </table>
-    </section>
 
-    <div class="page-break"></div>
+      <h4>Substituições</h4>
+      <table>
+        <tr>
+          <th>Alimento</th>
+          <th>Substituição</th>
+          <th>Justificativa</th>
+        </tr>
+        {% for item in refeicao.alimentos %}
+          {% for sub in item.substituicoes %}
+          <tr>
+            <td>{{ item.nome }}</td>
+            <td>{{ sub.opcao }}</td>
+            <td>{{ sub.justificativa }}</td>
+          </tr>
+          {% endfor %}
+        {% endfor %}
+      </table>
+    {% endfor %}
+  </div>
 
-    <section aria-label="Refeições">
-      {% for refeicao in refeicoes %}
-        <article>
-          <h2>{{ refeicao.nome }}</h2>
-          <table role="table" aria-describedby="descr-{{ loop.index }}">
-            <thead>
-              <tr>
-                <th scope="col">Alimento</th>
-                <th scope="col">Quantidade</th>
-                <th scope="col">Grupo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in refeicao.alimentos %}
-              <tr>
-                <td>{{ item.nome }}</td>
-                <td>{{ item.quantidade }}</td>
-                <td>{{ item.grupo }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </article>
-      {% endfor %}
-    </section>
+  <div class="section">
+    <h2>Distribuição de Macronutrientes</h2>
+    <div class="macros-bar">
+      <div class="macro-carb" style="width: {{ (macronutrientes.carboidratos | replace('g','') | float / (calorias / 4)) * 100 }}%;">Carboidratos: {{ macronutrientes.carboidratos }}</div>
+      <div class="macro-protein" style="width: {{ (macronutrientes.proteinas | replace('g','') | float / (calorias / 4)) * 100 }}%;">Proteínas: {{ macronutrientes.proteinas }}</div>
+      <div class="macro-fat" style="width: {{ (macronutrientes.gorduras | replace('g','') | float / (calorias / 9)) * 100 }}%;">Gorduras: {{ macronutrientes.gorduras }}</div>
+    </div>
+    <table>
+      <tr><th>Macronutriente</th><th>Quantidade</th></tr>
+      <tr><td>Carboidratos</td><td>{{ macronutrientes.carboidratos }}</td></tr>
+      <tr><td>Proteínas</td><td>{{ macronutrientes.proteinas }}</td></tr>
+      <tr><td>Gorduras</td><td>{{ macronutrientes.gorduras }}</td></tr>
+      <tr><td>Total kcal</td><td>{{ macronutrientes.total_kcal }}</td></tr>
+    </table>
+  </div>
 
-    <div class="page-break"></div>
+  <div class="section">
+    <h2>Recomendações</h2>
+    <p>{{ recomendacoes }}</p>
+  </div>
 
-    <section aria-label="Distribuição de macronutrientes">
-      <h2>Distribuição de Macronutrientes</h2>
-      <p>Veja abaixo a recomendação de macronutrientes para um plano nutricional balanceado:</p>
-      <div class="macros-bar" role="presentation">
-        <div class="macro-carb" aria-label="Carboidratos 45 por cento">
-          Carboidratos: {{ (calorias * 0.45 / 4) | round(0) }}g (45%)
-        </div>
-      </div>
-      <div class="macros-bar" role="presentation">
-        <div class="macro-protein" aria-label="Proteínas 35 por cento">
-          Proteínas: {{ (calorias * 0.35 / 4) | round(0) }}g (35%)
-        </div>
-      </div>
-      <div class="macros-bar" role="presentation">
-        <div class="macro-fat" aria-label="Gorduras 20 por cento">
-          Gorduras: {{ (calorias * 0.20 / 9) | round(0) }}g (20%)
-        </div>
-      </div>
-    </section>
+  <div class="section">
+    <h2>Observações</h2>
+    <p>{{ observacoes }}</p>
+  </div>
 
-    <div class="page-break"></div>
-
-    <section aria-label="Grupos alimentares">
-      <h2>Grupos Alimentares</h2>
-      {% for grupo in grupos %}
-        <article>
-          <h3>{{ grupo.nome }}</h3>
-          <table role="table" aria-describedby="desc-grupo-{{ loop.index }}">
-            <caption id="desc-grupo-{{ loop.index }}">Lista de alimentos do grupo {{ grupo.nome }}</caption>
-            <thead>
-              <tr>
-                <th scope="col">Alimento</th>
-                <th scope="col">Medida</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in grupo.itens %}
-              <tr>
-                <td>{{ item.nome }}</td>
-                <td>{{ item.medida }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </article>
-      {% endfor %}
-    </section>
-
-    <section aria-label="Comentários personalizados">
-      <h2>Comentários Personalizados</h2>
-      <p>
-        Para otimizar ainda mais seu plano, considere ajustar a ingestão de proteínas. Também recomendamos que você consulte um nutricionista para personalizar o plano conforme sua rotina e objetivos.
-      </p>
-    </section>
-
-    <footer class="footer" role="contentinfo">
-      <p>Este relatório é personalizado para ajudá-lo a alcançar seus objetivos nutricionais.</p>
-      <div class="disclaimer">
-        <p>
-          <strong>Aviso:</strong> Este relatório tem caráter informativo e não substitui a orientação de um profissional de saúde. Para uma avaliação detalhada, consulte um nutricionista ou médico especializado.
-        </p>
-      </div>
-    </footer>
-  </body>
+  <div class="disclaimer">
+    <p>Aviso: Este relatório tem caráter informativo e não substitui a orientação de um profissional de saúde.</p>
+  </div>
+</body>
 </html>

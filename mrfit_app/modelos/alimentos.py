@@ -10,7 +10,8 @@ class GrupoAlimento(db.Model):
     __tablename__ = "alimentos_grupos"
 
     id_grp_alimento = db.Column(db.Integer, primary_key=True)
-    nm_grp_alimento = db.Column(db.String(100), nullable=False, unique=True)
+    nm_grp_alimento = db.Column(db.String(50), nullable=False, unique=True)
+    de_grp_alimento = db.Column (db.String(100), nullable=False, unique=True)
 
     # Um grupo tem vários alimentos
     alimentos = db.relationship("Alimento", back_populates="tipo_alimento", lazy="select")
@@ -39,7 +40,7 @@ class Alimento(db.Model):
     potassio_mg = db.Column(db.Float, nullable=True)
     vitamina_c_mg = db.Column(db.Float, nullable=True)
 
-    tipo_alimento_id = db.Column(db.Integer, db.ForeignKey("alimentos_grupos.id_grp_alimento"), nullable=False)
+    id_grp_alimento = db.Column(db.Integer, db.ForeignKey("alimentos_grupos.id_grp_alimento"), nullable=False)
     tipo_alimento = db.relationship("GrupoAlimento", back_populates="alimentos")
 
     medidas_por_alimento = db.relationship("AlimentoMedida", back_populates="alimento", lazy="select")
