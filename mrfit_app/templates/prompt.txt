@@ -22,7 +22,9 @@ Regras:
    - Quantidade equivalente
    - Justificativa nutricional
 
-5. Ao final, informe:
+5. tendo em vista o cardapio gerado, gere também uma lista de compras de uma semana para a dieta base
+
+6. Ao final, informe:
    - Macronutrientes totais do dia (carboidratos, proteínas, gorduras, calorias)
    - Recomendações específicas baseadas no objetivo
    - Observações finais
@@ -183,6 +185,7 @@ Regras:
     "gorduras": "62g",
     "total_kcal": (INFORMAR KCAL PASSADA NO INICIO JUNTO COM OBJETIVO)
   },
+  "lista_compras": "RETORNA A LISTA DE COMPRAS COM BASE NOS ALIMENTOS SUGERIDOS PARA UMA SEMANA"
   "recomendacoes": "Mantenha a regularidade nas refeições, evite jejum prolongado e mantenha-se hidratado com pelo menos 2 litros de água por dia.",
   "observacoes": "Este plano alimentar foi gerado por uma inteligência artificial e não substitui avaliação nutricional individualizada por um profissional."
 }
