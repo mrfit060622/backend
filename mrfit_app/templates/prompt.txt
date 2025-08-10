@@ -28,7 +28,7 @@ Regras:
    - Macronutrientes totais do dia (carboidratos, proteínas, gorduras, calorias)
    - Recomendações específicas baseadas no objetivo
    - Observações finais
-7. URGENTE: considerar o objetivo do usuário sempre em primeiro lugar no momento de gerar a dieta. Se for possível conciliar com as preferencias, mas o objetivo final sempre será o mais importante, então sempre considere os alimentos que proporcionem isso.
+7. URGENTE: Sempre gerar a lista de compras com quantidades para a semana. Se 10 pães integrais é um pacote de pão, voce vai colocar o pacote de pão para a semana. Levem sempre em consideração e também considerar o objetivo do usuário sempre em primeiro lugar no momento de gerar a dieta. Se for possível conciliar com as preferencias, mas o objetivo final sempre será o mais importante, então sempre considere os alimentos que proporcionem isso.
 ⚠️ O formato da resposta deve ser um **JSON estruturado** da seguinte forma:
 
 {
