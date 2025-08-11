@@ -1,4 +1,4 @@
-Gere um plano alimentar completo para 1 dia com 6 refeições, não precisa dar preferencia para alimentos integrais, varie de acordo com o objetivo mas sempre mantendo a simplicidade para melhor adesão na dieta:
+Gere um plano alimentar completo para 1 dia a quantidade de refeições contida nas preferencias do usuario, não precisa dar preferencia para alimentos integrais, varie de acordo com o objetivo mas sempre mantendo a simplicidade para melhor adesão na dieta:
 - Café da manhã
 - Lanche da manhã
 - Almoço
@@ -13,6 +13,7 @@ Regras:
    - "Hipertrofia": priorizar proteínas, carboidratos complexos e refeições mais calóricas;
    - "Definição": foco em proteínas e controle glicêmico;
    - "Manutenção": balanço equilibrado entre todos os grupos alimentares.
+   - "Considerar as preferencias": adaptar a dieta as preferencias do usuário, mantendo sempre o foco no objetivo principal
 3. Cada alimento deve conter:
    - Quantidade
    - Grupo alimentar

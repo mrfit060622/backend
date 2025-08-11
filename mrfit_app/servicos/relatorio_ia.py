@@ -1,8 +1,35 @@
+import re
+import json
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from typing import Dict, Any,Text
-import json
+from typing import Dict, Any, Text
+
+# Carrega variáveis de ambiente
+load_dotenv()
+
+CHAVE_IA = os.getenv("CHAVE_IA")
+client = OpenAI(api_key=CHAVE_IA)
+
+def limpar_resposta_json(texto: str) -> str:
+    """
+    Remove blocos de código markdown e tenta isolar apenas o JSON.
+    """
+    # Remove início e fim de blocos de código ```json
+    texto = re.sub(r"^```(json)?", "", texto.strip(), flags=re.IGNORECASE)
+    texto = re.sub(r"```$", "", texto.strip())
+    match = re.search(r"\{.*\}", texto, flags=re.DOTALL)
+    if match:
+        return match.group(0)
+    return texto
+
+def corrigir_json_simples(texto: str) -> str:
+    """
+    Tenta corrigir erros simples de JSON como vírgulas sobrando.
+    """
+    # Remove vírgula antes de fechar objetos ou arrays
+    texto = re.sub(r",\s*([}\]])", r"\1", texto)
+    return texto
 
 load_dotenv()
 
@@ -46,15 +73,19 @@ def gerar_pdf_pg_ia(dados_usuario: Dict[str, Any]):
     
     conteudo = response.choices[0].message.content
     
+    conteudo_limpo = limpar_resposta_json(conteudo)
+    conteudo_corrigido = corrigir_json_simples(conteudo_limpo)
+    
     try:
-        plano_json = json.loads(conteudo)
-        json_data = (preparar_dados(dados_usuario,plano_json))
-        return json_data
-         
+        plano_json = json.loads(conteudo_corrigido)
     except json.JSONDecodeError as e:
-        print("Erro ao decodificar JSON:", e)
-        print("Conteúdo retornado:", conteudo)
+        print("❌ Erro ao decodificar JSON:", e)
+        print("🔍 Conteúdo bruto retornado:\n", conteudo)
         return None
+
+# Prepara os dados para uso no PDF
+    json_data = preparar_dados(dados_usuario, plano_json)
+    return json_data
 
 
 def preparar_dados(dados_usuario,json_data):
