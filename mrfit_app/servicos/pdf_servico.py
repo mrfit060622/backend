@@ -32,7 +32,6 @@ def gerar_pdf(data: Dict[str, str]) -> Tuple[str, str]:
 
     # Atualiza todo o data com o plano retornado
     data.update(plano_alimentar)
-    print (f"data: {data}")
     data['calorias_totais'] = calorias_totais
 
     # Renderiza o HTML
