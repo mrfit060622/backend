@@ -65,7 +65,6 @@ def gerar_pdf_pg_ia(dados_usuario: Dict[str, Any]):
               - Nível de atividade física: {dados_usuario["atividade"]}
               - Objetivo: {dados_usuario["objetivo"]}
               - Necessidade calórica diária estimada: {dados_usuario["calorias"]} kcal
-              - {dados_usuario["preferencias"]}
               {prompt_pesquisa}
             """}
         ]
@@ -100,7 +99,6 @@ def preparar_dados(dados_usuario,json_data):
             
             itens_refeicao.append({
                 "nome": alimento["alimento"],
-                "quantidade": alimento["quantidade"],
                 "kcal": alimento["calorias"],
                 "justificativa": f"Este alimento fornece {alimento['calorias']} kcal",
                 "substituicoes": substituicoes
