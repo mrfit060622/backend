@@ -4,19 +4,19 @@ from flask import current_app
 import requests
 import os
 
-def enviar_email(email: str, pdf_filename: str, codigo: str) -> str:
+def enviar_email(mail, email: str, pdf_filename: str, codigo: str) -> str:
     """Envia um e-mail com o link para download do PDF via API do Brevo."""
 
     api_host = current_app.config['API_HOST']
     base_url = f"{api_host}/pdf/download/"
     pdf_url = f"{base_url}{codigo}"
-    print (pdf_url)
+    
     # Verificar se a URL está correta
     parsed_url = urlparse(pdf_url)
     if not parsed_url.scheme or not parsed_url.netloc:
         logging.error(f"URL inválida: {pdf_url}")
         return "Erro ao gerar URL do PDF."
-
+    
     # Corpo do e-mail em HTML
     html_content = f"""
     <p>Olá,</p>
