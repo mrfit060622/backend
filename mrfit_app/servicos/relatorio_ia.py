@@ -99,6 +99,7 @@ def preparar_dados(dados_usuario,json_data):
             
             itens_refeicao.append({
                 "nome": alimento["alimento"],
+                "quantidade": alimento["quantidade"],
                 "kcal": alimento["calorias"],
                 "justificativa": f"Este alimento fornece {alimento['calorias']} kcal",
                 "substituicoes": substituicoes

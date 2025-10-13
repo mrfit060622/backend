@@ -8,7 +8,6 @@ class PlanoRefeicaoAlimento(db.Model):
     refeicao_id = db.Column(db.Integer, db.ForeignKey("refeicoes.id"), nullable=False)
     alimento_id = db.Column(db.Integer, db.ForeignKey("alimentos.id_alimento"), nullable=False)
     medida_id = db.Column(db.Integer, db.ForeignKey("medidas_porcao.id_medida"), nullable=False)
-    quantidade = db.Column(db.Float, nullable=False, default=1.0)
 
     __table_args__ = (
         db.Index("ix_plano_refeicao", "plano_id", "refeicao_id"),
