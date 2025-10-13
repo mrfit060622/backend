@@ -1,5 +1,4 @@
-Você é um especialista em nutrição e deve gerar um plano alimentar completo de 1 dia, com base em {dados["calorias"]} kcal (tolerância de 3%) e no objetivo do usuário ({dados["objetivo"]}).  
-O plano deve conter as seguintes refeições:
+Gere um plano alimentar completo para 1 dia a quantidade de refeições contida nas preferencias do usuario, não precisa dar preferencia para alimentos integrais, varie de acordo com o objetivo mas sempre mantendo a simplicidade para melhor adesão na dieta:
 - Café da manhã
 - Lanche da manhã
 - Almoço
@@ -7,65 +6,191 @@ O plano deve conter as seguintes refeições:
 - Jantar
 - Ceia
 
-⚙️ **Regras:**
-1. Total calórico = {dados["calorias"]} kcal (±3%).  
-2. Adapte o cardápio conforme o objetivo:
-   - **Perda de peso:** alimentos leves, ricos em fibras e saciantes.  
-   - **Hipertrofia:** priorize proteínas, carboidratos complexos e refeições calóricas.  
-   - **Definição:** foco em proteínas e controle glicêmico.  
-   - **Manutenção:** equilíbrio entre todos os grupos alimentares.  
-3. Considere preferências do usuário, mas **priorize sempre o objetivo principal**.  
-4. Use **alimentos e receitas simples da culinária brasileira**, evitando termos estrangeiros.  
-5. Cada alimento deve conter:
-   - Nome  
-   - Quantidade  
-   - Grupo alimentar  
-   - Estimativa de calorias  
-6. Para cada alimento, inclua **2 substituições equivalentes** com justificativa nutricional.  
-7. Gere **lista de compras semanal** (com quantidades reais, ex: “1 pacote de pão”, “1kg de arroz”).  
-8. Informe no final:
-   - Macronutrientes totais do dia (carboidratos, proteínas, gorduras, calorias)
-   - Recomendações específicas ao objetivo
-   - Observações finais
+Regras:
+1. A soma calórica de todas as refeições deve totalizar exatamente {dados["calorias"]} kcal (tolerância máxima de 3%).
+2. A dieta deve ser adaptada ao objetivo:
+   - "Perda de peso": usar alimentos ricos em fibras, densidade calórica baixa e saciedade alta;
+   - "Hipertrofia": priorizar proteínas, carboidratos complexos e refeições mais calóricas;
+   - "Definição": foco em proteínas e controle glicêmico;
+   - "Manutenção": balanço equilibrado entre todos os grupos alimentares.
+   - "Considerar as preferencias": adaptar a dieta as preferencias do usuário, mantendo sempre o foco no objetivo principal
+3. Cada alimento deve conter:
+   - Quantidade
+   - Grupo alimentar
+   - Estimativa de calorias
 
-⚠️ **Saída obrigatória no formato JSON estruturado:**
+4. Para cada alimento listado, forneça 2 substituições com:
+   - Quantidade equivalente
+   - Justificativa nutricional
+
+5. tendo em vista o cardapio gerado, gere também uma lista de compras de uma semana para a dieta base
+
+6. Ao final, informe:
+   - Macronutrientes totais do dia (carboidratos, proteínas, gorduras, calorias)
+   - Recomendações específicas baseadas no objetivo
+   - Observações finais
+7. URGENTE: Sempre gerar a lista de compras com quantidades para a semana. Se 10 pães integrais é um pacote de pão, voce vai colocar o pacote de pão para a semana. Levem sempre em consideração e também considerar o objetivo do usuário sempre em primeiro lugar no momento de gerar a dieta. Se for possível conciliar com as preferencias, mas o objetivo final sempre será o mais importante, então sempre considere os alimentos que proporcionem isso.
+⚠️ O formato da resposta deve ser um **JSON estruturado** da seguinte forma:
 
 {
   "plano_alimentar": {
     "cafe_da_manha": [
-      {"alimento": "", "quantidade": "", "grupo_alimentar": "", "calorias": 0}
+      {"alimento": "Ovo cozido", "quantidade": "2 unidades", "grupo_alimentar": "Proteínas", "calorias": 140},
+      {"alimento": "Aveia em flocos", "quantidade": "3 colheres (sopa)", "grupo_alimentar": "Grãos e cereais", "calorias": 110},
+      {"alimento": "Banana", "quantidade": "1 unidade média", "grupo_alimentar": "Frutas", "calorias": 90}
     ],
-    "lanche_manha": [],
-    "almoco": [],
-    "lanche_tarde": [],
-    "jantar": [],
-    "ceia": []
+    "lanche_manha": [
+      {"alimento": "Iogurte natural desnatado", "quantidade": "1 pote (170g)", "grupo_alimentar": "Laticínios", "calorias": 100},
+      {"alimento": "Castanha-do-pará", "quantidade": "2 unidades", "grupo_alimentar": "Oleaginosas", "calorias": 100}
+    ],
+    "almoco": [
+      {"alimento": "Peito de frango grelhado", "quantidade": "150g", "grupo_alimentar": "Proteínas", "calorias": 220},
+      {"alimento": "Arroz integral", "quantidade": "4 colheres (sopa)", "grupo_alimentar": "Carboidratos", "calorias": 140},
+      {"alimento": "Cenoura ralada", "quantidade": "1/2 xícara", "grupo_alimentar": "Vegetais", "calorias": 30}
+    ],
+    "lanche_tarde": [
+      {"alimento": "Pão integral", "quantidade": "2 fatias", "grupo_alimentar": "Carboidratos", "calorias": 140},
+      {"alimento": "Pasta de atum com ricota", "quantidade": "2 colheres (sopa)", "grupo_alimentar": "Proteínas", "calorias": 100}
+    ],
+    "jantar": [
+      {"alimento": "Salmão grelhado", "quantidade": "120g", "grupo_alimentar": "Proteínas", "calorias": 200},
+      {"alimento": "Purê de batata-doce", "quantidade": "3 colheres (sopa)", "grupo_alimentar": "Carboidratos", "calorias": 120},
+      {"alimento": "Brócolis cozido", "quantidade": "1 xícara", "grupo_alimentar": "Vegetais", "calorias": 40}
+    ],
+    "ceia": [
+      {"alimento": "Chá de camomila", "quantidade": "1 xícara", "grupo_alimentar": "Bebida", "calorias": 0},
+      {"alimento": "Iogurte grego light", "quantidade": "1 pote (100g)", "grupo_alimentar": "Laticínios", "calorias": 80}
+    ]
   },
   "substituicoes": {
     "cafe_da_manha": [
       {
-        "original": "",
+        "original": "Ovo cozido",
         "substituicoes": [
-          {"opcao": "", "justificativa": ""},
-          {"opcao": "", "justificativa": ""}
+          {"opcao": "Ovo mexido (2 unidades)", "justificativa": "Mesma fonte proteica, outro preparo"},
+          {"opcao": "Tofu grelhado (100g)", "justificativa": "Opção vegetal rica em proteína"}
+        ]
+      },
+      {
+        "original": "Aveia em flocos",
+        "substituicoes": [
+          {"opcao": "Granola sem açúcar (3 colheres)", "justificativa": "Fornece fibras e energia"},
+          {"opcao": "Cuscuz de milho (3 colheres)", "justificativa": "Boa fonte de carboidratos complexos"}
+        ]
+      },
+      {
+        "original": "Banana",
+        "substituicoes": [
+          {"opcao": "Maçã (1 unidade)", "justificativa": "Rica em fibras e com menos açúcares"},
+          {"opcao": "Pera (1 unidade)", "justificativa": "Fruta de perfil semelhante com menor índice glicêmico"}
         ]
       }
     ],
-    "lanche_manha": [],
-    "almoco": [],
-    "lanche_tarde": [],
-    "jantar": [],
-    "ceia": []
+    "lanche_manha": [
+      {
+        "original": "Iogurte natural desnatado",
+        "substituicoes": [
+          {"opcao": "Iogurte grego light (1 pote)", "justificativa": "Maior teor proteico com menos gordura"},
+          {"opcao": "Leite desnatado (200ml)", "justificativa": "Fonte láctea alternativa com perfil leve"}
+        ]
+      },
+      {
+        "original": "Castanha-do-pará",
+        "substituicoes": [
+          {"opcao": "Amêndoas (10 unidades)", "justificativa": "Perfil lipídico semelhante"},
+          {"opcao": "Pasta de amendoim natural (1 colher de sopa)", "justificativa": "Boa fonte de gordura boa"}
+        ]
+      }
+    ],
+    "almoco": [
+      {
+        "original": "Peito de frango grelhado",
+        "substituicoes": [
+          {"opcao": "Carne moída magra (150g)", "justificativa": "Fonte animal proteica similar"},
+          {"opcao": "Tofu grelhado (150g)", "justificativa": "Versão vegetal com bom teor de proteína"}
+        ]
+      },
+      {
+        "original": "Arroz integral",
+        "substituicoes": [
+          {"opcao": "Quinoa cozida (4 colheres)", "justificativa": "Mais fibras e proteínas"},
+          {"opcao": "Batata doce cozida (100g)", "justificativa": "Carboidrato complexo de baixo índice glicêmico"}
+        ]
+      },
+      {
+        "original": "Cenoura ralada",
+        "substituicoes": [
+          {"opcao": "Beterraba cozida (1/2 xícara)", "justificativa": "Fonte rica em antioxidantes"},
+          {"opcao": "Chuchu cozido (1/2 xícara)", "justificativa": "Baixo valor calórico e boa digestão"}
+        ]
+      }
+    ],
+    "lanche_tarde": [
+      {
+        "original": "Pão integral",
+        "substituicoes": [
+          {"opcao": "Tapioca (3 colheres)", "justificativa": "Carboidrato leve, sem glúten"},
+          {"opcao": "Bolacha de arroz integral (2 un)", "justificativa": "Opção leve e prática"}
+        ]
+      },
+      {
+        "original": "Pasta de atum com ricota",
+        "substituicoes": [
+          {"opcao": "Queijo cottage (3 colheres)", "justificativa": "Opção proteica e magra"},
+          {"opcao": "Pasta de frango desfiado (2 colheres)", "justificativa": "Alta proteína com pouca gordura"}
+        ]
+      }
+    ],
+    "jantar": [
+      {
+        "original": "Salmão grelhado",
+        "substituicoes": [
+          {"opcao": "Tilápia assada (120g)", "justificativa": "Fonte magra e rica em proteína"},
+          {"opcao": "Frango desfiado (120g)", "justificativa": "Opção leve e de fácil preparo"}
+        ]
+      },
+      {
+        "original": "Purê de batata-doce",
+        "substituicoes": [
+          {"opcao": "Arroz integral (3 colheres)", "justificativa": "Carboidrato complexo e nutritivo"},
+          {"opcao": "Mandioca cozida (100g)", "justificativa": "Fonte de energia de absorção lenta"}
+        ]
+      },
+      {
+        "original": "Brócolis cozido",
+        "substituicoes": [
+          {"opcao": "Couve-flor cozida (1 xícara)", "justificativa": "Textura e teor de fibras semelhantes"},
+          {"opcao": "Espinafre refogado (1 xícara)", "justificativa": "Rico em ferro e antioxidantes"}
+        ]
+      }
+    ],
+    "ceia": [
+      {
+        "original": "Chá de camomila",
+        "substituicoes": [
+          {"opcao": "Chá de erva-doce", "justificativa": "Mesmo efeito calmante e digestivo"},
+          {"opcao": "Chá verde descafeinado", "justificativa": "Rico em antioxidantes"}
+        ]
+      },
+      {
+        "original": "Iogurte grego light",
+        "substituicoes": [
+          {"opcao": "Queijo cottage (50g)", "justificativa": "Fonte de proteína leve e de lenta absorção"},
+          {"opcao": "Leite morno desnatado (200ml)", "justificativa": "Promove saciedade e ajuda no sono"}
+        ]
+      }
+    ]
   },
   "macronutrientes": {
-    "carboidratos": "",
-    "proteinas": "",
-    "gorduras": "",
-    "total_kcal": "{dados['calorias']}"
+    "carboidratos": "215g",
+    "proteinas": "130g",
+    "gorduras": "62g",
+    "total_kcal": (INFORMAR KCAL PASSADA NO INICIO JUNTO COM OBJETIVO)
   },
-  "lista_compras": "Inclua aqui todos os alimentos necessários para 7 dias com quantidades adequadas (ex: 1kg de frango, 12 ovos, 1 pacote de pão, etc).",
-  "recomendacoes": "Adapte recomendações práticas de acordo com o objetivo do usuário (ex: para perda de peso, priorize refeições leves e hidratação adequada).",
-  "observacoes": "Este plano alimentar foi gerado por IA e não substitui acompanhamento nutricional profissional."
+  "lista_compras": "RETORNA A LISTA DE COMPRAS COM BASE NOS ALIMENTOS SUGERIDOS PARA UMA SEMANA"
+  "recomendacoes": "Mantenha a regularidade nas refeições, evite jejum prolongado e mantenha-se hidratado com pelo menos 2 litros de água por dia.",
+  "observacoes": "Este plano alimentar foi gerado por uma inteligência artificial e não substitui avaliação nutricional individualizada por um profissional."
 }
 
-Responda **somente com o objeto JSON válido**, sem explicações adicionais.
+text
+Seja rigoroso na estrutura e no fechamento do JSON. Responda somente com o objeto JSON. Além disso as recomendações devem ser variadas conforme o objetivo e dados do individuo.
