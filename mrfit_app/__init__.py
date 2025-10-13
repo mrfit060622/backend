@@ -11,7 +11,7 @@ mail = Mail()
 def create_app():
     """Cria e configura a aplicação Flask."""
     app = Flask(__name__)
-    sslify = SSLify(app)  # Força HTTPS
+    #sslify = SSLify(app)  # Força HTTPS
     # Carrega as configurações da classe DatabaseConfig
     app.config.from_object(Config)
      
