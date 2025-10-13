@@ -38,7 +38,7 @@ def enviar_email(mail,email: str, codigo: str,pdf_filename: str) -> str:
     payload = {
         "sender": {
             "name": "MrFit",
-            "email": "suporte@srfit.com"  # Remetente verificado no Brevo
+            "email": "suporte@srfit.com.br"  # Remetente verificado no Brevo
         },
         "to": [{"email": email}],
         "subject": "📄 Seu Relatório de Cálculo Nutricional",
