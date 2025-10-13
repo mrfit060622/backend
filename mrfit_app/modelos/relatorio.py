@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-import uuid
 from datetime import datetime
 from mrfit_app import db
 
