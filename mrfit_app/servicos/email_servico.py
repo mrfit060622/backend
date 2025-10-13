@@ -3,7 +3,7 @@ from flask_mail import Message
 from urllib.parse import urlparse
 from flask import current_app
 
-def enviar_email(mail, email: str, pdf_filename: str, codigo: str) -> str:
+def enviar_email(mail, email: str, codigo: str,pdf_filename: str = None ) -> str:
     """Envia um e-mail com o link para download do PDF."""
     
     api_host = current_app.config['API_HOST']
