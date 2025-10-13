@@ -4,7 +4,7 @@ from flask import current_app
 import requests
 import os
 
-def enviar_email(email: str, pdf_filename: str, codigo: str) -> str:
+def enviar_email(email: str, codigo: str,pdf_filename: str) -> str:
     """Envia um e-mail com o link para download do PDF via API do Brevo."""
 
     api_host = current_app.config['API_HOST']
