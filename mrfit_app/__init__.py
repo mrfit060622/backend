@@ -26,15 +26,11 @@ def create_app():
     CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
     # Importação das rotas dentro da função para evitar importação circular
-    from mrfit_app.rotas.cadastros import bp_usuario
-    from mrfit_app.rotas.calculos_rota import bp_calculo
     from mrfit_app.rotas.pdf import pdf_bp
     from mrfit_app.rotas.pagamento import pagamento_bp
     from mrfit_app.rotas.notificacoes import bp_notificacoes
 
     # Registro dos blueprints
-    app.register_blueprint(bp_usuario, url_prefix='/usuario')
-    app.register_blueprint(bp_calculo, url_prefix='/calculo')
     app.register_blueprint(pdf_bp, url_prefix='/pdf')
     app.register_blueprint(pagamento_bp,url_prefix='/pagamento')
     app.register_blueprint(bp_notificacoes, url_prefix='/notificacoes')

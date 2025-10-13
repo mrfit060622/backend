@@ -1,6 +1,5 @@
-# servicos/plano_alimentar_servico.py
+
 from typing import List, Dict
-# from mrfit_app.modelos.plano_alimentarcopy import gerar_plano_alimentar
 
 
 def validar_dados_essenciais(data: Dict[str, str]) -> List[str]:

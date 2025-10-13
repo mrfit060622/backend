@@ -1,7 +1,6 @@
 from flask import request, jsonify
 import os
 import mercadopago
-from mrfit_app.servicos.mercado_pago_servico import criar_preferencia
 from mrfit_app.servicos.registro_pedido_servico import registrar_pedido_relatorio
 from mrfit_app.servicos.pagamento_servico import criar_pagamento_transparente
 from mrfit_app.modelos.pagamento import Pagamento

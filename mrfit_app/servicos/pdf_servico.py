@@ -3,8 +3,6 @@ import logging
 import uuid
 from flask import render_template
 from weasyprint import HTML
-from mrfit_app.servicos.plano_alimentar_servico import validar_dados_essenciais
-from mrfit_app.modelos.plano_alimentar import gerar_plano_alimentar
 from mrfit_app.servicos.relatorio_ia import gerar_pdf_pg_ia
 from typing import Dict, Tuple
 
