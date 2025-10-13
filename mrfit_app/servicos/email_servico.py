@@ -4,7 +4,7 @@ from flask import current_app
 import requests
 import os
 
-def enviar_email(email: str, pdf_filename: str, codigo: str) -> str:
+def enviar_email(mail,email: str, pdf_filename: str, codigo: str) -> str:
     """Envia um e-mail com o link para download do PDF via API do Brevo."""
 
     api_host = current_app.config['API_HOST']
@@ -38,7 +38,7 @@ def enviar_email(email: str, pdf_filename: str, codigo: str) -> str:
     payload = {
         "sender": {
             "name": "MrFit",
-            "email": "992008001@smtp-brevo.com"  # Remetente verificado no Brevo
+            "email": "suporte@srfit.com.br"  # Remetente verificado no Brevo
         },
         "to": [{"email": email}],
         "subject": "📄 Seu Relatório de Cálculo Nutricional",
