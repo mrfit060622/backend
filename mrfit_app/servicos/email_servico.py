@@ -1,13 +1,13 @@
 import logging
-from flask_mail import Message
 from urllib.parse import urlparse
 from flask import current_app
+import requests
+import os
 
-def enviar_email(mail, email: str, pdf_filename: str, codigo: str) -> str:
-    """Envia um e-mail com o link para download do PDF."""
-    
+def enviar_email(email: str, pdf_filename: str, codigo: str) -> str:
+    """Envia um e-mail com o link para download do PDF via API do Brevo."""
+
     api_host = current_app.config['API_HOST']
-    # Definir a base da URL, corrigindo a formatação e usando http://
     base_url = f"{api_host}/pdf/download/"
     pdf_url = f"{base_url}{codigo}"
 
@@ -17,15 +17,8 @@ def enviar_email(mail, email: str, pdf_filename: str, codigo: str) -> str:
         logging.error(f"URL inválida: {pdf_url}")
         return "Erro ao gerar URL do PDF."
 
-    # Criar o objeto da mensagem
-    msg = Message(
-        subject="📄 Seu Relatório de Cálculo Nutricional",
-        sender=("MrFit", "mrftig@gmail.com"),  # Nome + e-mail
-        recipients=[email]
-    )
-
-    # Corpo do e-mail em HTML para melhorar a entrega
-    msg.html = f"""
+    # Corpo do e-mail em HTML
+    html_content = f"""
     <p>Olá,</p>
     <p>Seu relatório de cálculo nutricional está pronto! Você pode baixá-lo no link abaixo:</p>
     <p><a href="{pdf_url}" style="color: blue; font-weight: bold;">Baixar Relatório</a></p>
@@ -36,12 +29,35 @@ def enviar_email(mail, email: str, pdf_filename: str, codigo: str) -> str:
     <p><small>Este é um e-mail automático. Por favor, não responda.</small></p>
     """
 
-    # Tentar enviar o e-mail
+    # Chave de API do Brevo armazenada em variável de ambiente
+    api_key = os.getenv('BREVO_API_KEY')
+    if not api_key:
+        logging.error("Chave de API do Brevo não encontrada.")
+        return "Erro: chave de API não configurada."
+
+    payload = {
+        "sender": {
+            "name": "MrFit",
+            "email": "992008001@smtp-brevo.com"  # Remetente verificado no Brevo
+        },
+        "to": [{"email": email}],
+        "subject": "📄 Seu Relatório de Cálculo Nutricional",
+        "htmlContent": html_content
+    }
+
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+
     try:
-        logging.debug(f"Enviando e-mail para: {email}")
-        mail.send(msg)
-        logging.debug("E-mail enviado com sucesso.")
-        return None  # Caso não ocorra erro
-    except Exception as e:
-        logging.error(f"Erro ao enviar e-mail: {e}")
+        logging.info(f"📨 Enviando e-mail para {email} via API Brevo...")
+        response = requests.post("https://api.brevo.com/v3/smtp/email", json=payload, headers=headers)
+        response.raise_for_status()
+        logging.info("✅ E-mail enviado com sucesso via Brevo API.")
+        return None
+    except requests.exceptions.RequestException as e:
+        logging.error(f"❌ Erro ao enviar e-mail via Brevo API: {e}")
         return f"Erro ao enviar o e-mail: {str(e)}"
+
