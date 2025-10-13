@@ -193,4 +193,4 @@ Regras:
 }
 
 text
-Seja rigoroso na estrutura e no fechamento do JSON. Responda somente com o objeto JSON. Além disso as recomendações devem ser variadas conforme o objetivo e dados do individuo.
+Seja rigoroso na estrutura e no fechamento do JSON. Responda somente com o objeto JSON. Além disso as recomendações devem ser variadas conforme o objetivo e dados do individuo. Incluir alimentos comuns na culinaria dos BRasileiros
