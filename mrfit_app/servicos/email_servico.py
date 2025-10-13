@@ -10,7 +10,7 @@ def enviar_email(email: str, pdf_filename: str, codigo: str) -> str:
     api_host = current_app.config['API_HOST']
     base_url = f"{api_host}/pdf/download/"
     pdf_url = f"{base_url}{codigo}"
-
+    print (pdf_url)
     # Verificar se a URL está correta
     parsed_url = urlparse(pdf_url)
     if not parsed_url.scheme or not parsed_url.netloc:
