@@ -3,6 +3,7 @@ import logging
 import uuid
 from flask import render_template
 from weasyprint import HTML
+from mrfit_app.servicos.plano_alimentar_servico import validar_dados_essenciais
 from mrfit_app.servicos.relatorio_ia import gerar_pdf_pg_ia
 from typing import Dict, Tuple
 
@@ -30,6 +31,7 @@ def gerar_pdf(data: Dict[str, str]) -> Tuple[str, str]:
 
     # Atualiza todo o data com o plano retornado
     data.update(plano_alimentar)
+    print (f"data: {data}")
     data['calorias_totais'] = calorias_totais
 
     # Renderiza o HTML

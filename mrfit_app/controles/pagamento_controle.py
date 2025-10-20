@@ -1,7 +1,7 @@
 from flask import request, jsonify
 import os
 import mercadopago
-from mrfit_app.servicos.registro_pedido_servico import registrar_pedido_relatorio
+from mrfit_app.servicos.registro_pedido_servico import registrar_pedido_relatorio, registrar_pedido_relatorio_gratis
 from mrfit_app.servicos.pagamento_servico import criar_pagamento_transparente
 from mrfit_app.modelos.pagamento import Pagamento
 from mrfit_app.modelos.relatorio import Relatorio
@@ -189,5 +189,41 @@ def processar_pagamento(dados):
     )
     print (f"[DEBUG] Resultado da criação do pedido: {erro}")
     
+    
+def processar_relatorio_gratis(dados):
+    
+    if dados is None:
+        return {"erro": "Dados do relatório obrigatório"}, 400
+
+    uuid_requisicao = str(uuid.uuid4())
+    print(f"[DEBUG] UUID da requisição gerado: {uuid_requisicao}")
+    email = dados.get("email")
+    nome = dados.get("nome")
+    idade = dados.get("idade")
+    peso = dados.get("peso")
+    altura = dados.get("altura")
+    sexo = dados.get("sexo")
+    atividade = dados.get("atividade")
+    objetivo = dados.get("objetivo")
+    calorias = dados.get("calorias")
+
+    resultado = registrar_pedido_relatorio_gratis(
+            db.session,
+            data={
+                'email': email,
+                'nome': nome,
+                'idade': idade,
+                'peso': peso,
+                'altura': altura,
+                'sexo': sexo,
+                'atividade': atividade,
+                'objetivo': objetivo,
+                'calorias': calorias
+            },
+            external_reference=uuid_requisicao,
+            pagamento_id=None
+    )
+    print (f"[DEBUG] Resultado da criação do pedido: {resultado}")
+
     return resultado
 
