@@ -1,11 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from mrfit_app import db
+from sqlalchemy.dialects.postgresql import JSONB
 
 class RelatorioGratuito(db.Model):
     __tablename__ = "relatorio_gratis"
 
     id_relatorio_gratis = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    external_reference = db.Column(db.Integer)
     email = db.Column(db.String, nullable=False)
     nome = db.Column(db.String)
     idade = db.Column(db.Integer)
@@ -16,3 +18,5 @@ class RelatorioGratuito(db.Model):
     objetivo = db.Column(db.String)
     calorias = db.Column(db.Integer)
     data_solicitacao = db.Column(db.DateTime, default=datetime.utcnow)
+    plano_alimentar = db.Column(JSONB)
+

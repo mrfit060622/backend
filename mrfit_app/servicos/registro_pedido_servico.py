@@ -26,7 +26,7 @@ def registrar_pedido_relatorio(db: Session, data: dict, external_reference: str,
     except Exception as e:
         db.rollback()
         return str(e)  # Retorna o erro como string
-def registrar_pedido_relatorio_gratis(db: Session, data: dict):
+def registrar_pedido_relatorio_gratis(db: Session, data: dict, referencia: str, plano_alimentar: dict):
     try:
         relatorio_gratis = RelatorioGratuito(
             email=data.get('email'),
@@ -37,7 +37,9 @@ def registrar_pedido_relatorio_gratis(db: Session, data: dict):
             sexo=data.get('sexo'),
             atividade=data.get('atividade'),
             objetivo=data.get('objetivo'),
-            calorias=int(data.get('calorias')) if data.get('calorias') else None
+            calorias=int(data.get('calorias')) if data.get('calorias') else None,
+            plano_alimentar=plano_alimentar,
+            external_reference=referencia  
         )
 
         db.add(relatorio_gratis)

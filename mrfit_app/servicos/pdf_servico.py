@@ -26,13 +26,15 @@ def gerar_pdf(data: Dict[str, str]) -> Tuple[str, str]:
 
     plano_alimentar, calorias_totais = gerar_pdf_pg_ia(data)
     
+    
+
     if not plano_alimentar:
         return None, "Falha ao gerar plano alimentar."
 
     # Atualiza todo o data com o plano retornado
     data.update(plano_alimentar)
-    print (f"data: {data}")
     data['calorias_totais'] = calorias_totais
+    
 
     # Renderiza o HTML
     html = render_template('pdf_template.html', **data)
@@ -45,4 +47,4 @@ def gerar_pdf(data: Dict[str, str]) -> Tuple[str, str]:
         logging.error(f"Erro ao salvar o PDF: {e}")
         return None, f"Erro ao salvar o PDF: {e}"
 
-    return pdf_path, None
+    return pdf_path,plano_alimentar, None
