@@ -29,9 +29,11 @@ def create_app():
     from mrfit_app.rotas.pdf import pdf_bp
     from mrfit_app.rotas.pagamento import pagamento_bp
     from mrfit_app.rotas.notificacoes import bp_notificacoes
+    from mrfit_app.rotas.ping import bp_ping
 
     # Registro dos blueprints
     app.register_blueprint(pdf_bp, url_prefix='/pdf')
     app.register_blueprint(pagamento_bp,url_prefix='/pagamento')
     app.register_blueprint(bp_notificacoes, url_prefix='/notificacoes')
+    app.register_blueprint(bp_ping, url_prefix='/ping')
     return app
